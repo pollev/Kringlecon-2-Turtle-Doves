@@ -477,26 +477,24 @@ Alright, with that out of the way, let us move on to the actual challenges!
 ### Escape Ed
 #### Context
 Initial Dialog:
-[*] NPC: Bushy Evergreen
-> "Hi, I'm Bushy Evergreen.  Welcome to Elf U!"
-> "I'm glad you're here. I'm the target of a terrible trick."
-> "Pepper Minstix is at it again, sticking me in a text editor."
-> "Pepper is forcing me to learn ed."
-> "Even the hint is ugly. Why can't I just use Gedit?"
-> "Please help me just quit the grinchy thing."
-> "..."
+Bushy Evergreen
+> Hi, I'm Bushy Evergreen.  Welcome to Elf U!
+> I'm glad you're here. I'm the target of a terrible trick.
+> Pepper Minstix is at it again, sticking me in a text editor.
+> Pepper is forcing me to learn ed.
+> Even the hint is ugly. Why can't I just use Gedit?
+> Please help me just quit the grinchy thing.
 
 
 Completed Dialog:
-[*] NPC: Bushy Evergreen
-> "Wow, that was much easier than I'd thought."
-> "Maybe I don't need a clunky GUI after all!"
-> "Have you taken a look at the password spray attack artifacts?"
-> "I'll bet that DeepBlueCLI tool is helpful."
-> "You can check it out on GitHub."
-> "It was written by that Eric Conrad."
-> "He lives in Maine - not too far from here!"
-> "..."
+NPC: Bushy Evergreen
+> Wow, that was much easier than I'd thought.
+> Maybe I don't need a clunky GUI after all!
+> Have you taken a look at the password spray attack artifacts?
+> I'll bet that DeepBlueCLI tool is helpful.
+> You can check it out on GitHub.
+> It was written by that Eric Conrad.
+> He lives in Maine - not too far from here!
 
 
 Challenge-url:
