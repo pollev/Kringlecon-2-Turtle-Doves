@@ -50,7 +50,7 @@ The game started on a Friday evening and my colleague and I had agreed to start 
 As a result, I was eagerly looking at the start of the event and trying to do anything other than actually working on the challenges.
 
 I figured I would see how the game worked behind the scenes and started looking at the websocket traffic between my client and the server.
-This quickly turned into a small project of itself. Soon I had a small script running and I decided I would use it handle most of the information gathering.
+This quickly turned into a small project of itself. Soon I had a small script running and I decided I would use it to handle most of the information gathering.
 A few hours later and [santas_little_helper.py](https://github.com/pollev/santas_little_helper) was born.
 
 The following sections group the data we collected through the script.
@@ -403,14 +403,40 @@ Terminals:
 - Escape Ed
 
 
-### Notable Characters
-todo
-
 ### Oversight: End-Credits Bypass
 todo
 
 
 ## Terminal Challenges
+
+### Escape Ed
+todo
+
+### Frosty Keypad
+todo
+
+### Linux Path
+todo
+
+### Nyanshell
+todo
+
+### Mongo Pilfer
+todo
+
+### Smart Braces
+todo
+
+### Holiday Hack Trail
+todo
+
+### Graylog
+todo
+
+### Powershell Laser
+todo
+
+### Sleigh Route Finder
 todo
 
 
