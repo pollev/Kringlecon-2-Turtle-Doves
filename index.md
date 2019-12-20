@@ -404,7 +404,67 @@ Terminals:
 
 
 ### Oversight: End-Credits Bypass
-todo
+While working on the data gathering script, I realized that I would need to automate the movement from room to room. The script could only pull data for a location after physically moving my character there. So I started working on a 'teleportation' option. The script interacts with the backend directly to move my character from room to room, it then grabs all zone information it finds and stores it. Part of that info is the exits for that specific room. That way, once we enter a zone, we can autoamtically figure out new locations we can go to and the script can then automate going to those new zones as well.
+
+It turns out however that certain zones, which are supposed to only be accessible after completion of an objective, are still accessible if interacting with the websocket in this manner.
+It is the client which refuses to enter these zones. The portals to the zones still exist, and we can force our way in by sending the appropriate command to the server. It seems the devs forgot to do some server side validation here.
+
+After discovering this, I added a 'teleportation' feature to the script. Which can teleport your character directly to any zone (including the finale zone)
+```
+polle@polle-pc$ ./santas_little_helper.py -t
+
+.▄▄ ·  ▄▄▄·  ▐ ▄ ▄▄▄▄▄ ▄▄▄· .▄▄ ·     ▄▄▌  ▪  ▄▄▄▄▄▄▄▄▄▄▄▄▌  ▄▄▄ .     ▄ .▄▄▄▄ .▄▄▌   ▄▄▄·▄▄▄ .▄▄▄         {_}
+▐█ ▀. ▐█ ▀█ •█▌▐█•██  ▐█ ▀█ ▐█ ▀.     ██•  ██ •██  •██  ██•  ▀▄.▀·    ██▪▐█▀▄.▀·██•  ▐█ ▄█▀▄.▀·▀▄ █·      *-=\
+▄▀▀▀█▄▄█▀▀█ ▐█▐▐▌ ▐█.▪▄█▀▀█ ▄▀▀▀█▄    ██▪  ▐█· ▐█.▪ ▐█.▪██▪  ▐▀▀▪▄    ██▀▐█▐▀▀▪▄██▪   ██▀·▐▀▀▪▄▐▀▀▄          \____(
+▐█▄▪▐█▐█ ▪▐▌██▐█▌ ▐█▌·▐█ ▪▐▌▐█▄▪▐█    ▐█▌▐▌▐█▌ ▐█▌· ▐█▌·▐█▌▐▌▐█▄▄▌    ██▌▐▀▐█▄▄▌▐█▌▐▌▐█▪·•▐█▄▄▌▐█•█▌        _|/---\
+ ▀▀▀▀  ▀  ▀ ▀▀ █▪ ▀▀▀  ▀  ▀  ▀▀▀▀     .▀▀▀ ▀▀▀ ▀▀▀  ▀▀▀ .▀▀▀  ▀▀▀     ▀▀▀ · ▀▀▀ .▀▀▀ .▀    ▀▀▀ .▀  ▀        \        \
+ - A Kringlecon 2019 tool by Polle Vanhoof
+
+[+] Loading portal data from portal_data.json
+[+] Loading extra info from extra_info.json
+[*] Starting login for user d8489526@urhen.com
+[-] WARNING: Plaintext credentials in script
+[*] Server new current location: trainstation
+
+[+] Starting teleportation module. Where would you like to go?
+[>] Your current zone is trainstation
+- quad (The Quad)
+- studentunion (Student Union)
+- sleighshop (Sleigh Workshop)
+- finale (The Bell Tower)
+- hermeyhall (Hermey Hall)
+- netwars (NetWars)
+- speakerroom (Speaker UNpreparedness Room)
+- track1 (Track 1)
+- track2 (Track 2)
+- track3 (Track 3)
+- track4 (Track 4)
+- track5 (Track 5)
+- track6 (Track 6)
+- track7 (Track 7)
+- library (The Laboratory)
+- dorm (Dorm)
+- mintydorm (Minty's Dorm Room)
+- mintycloset (Minty's Closet)
+- steamtunnels (Steam Tunnels)
+- trainstation (Train Station)
+
+Please enter the zone shortname you would like to teleport to: finale
+[!] Full multi-zone move from trainstation to finale
+[!] Moving from room trainstation to quad_north
+[*] Server new current location: quad
+[!] Moving from room quad to unionleft
+[*] Server new current location: studentunion
+[!] Moving from room studentunion to sleighshop
+[*] Server new current location: sleighshop
+[!] Moving from room sleighshop to finale
+[*] Server new current location: finale
+
+[+] DONE!
+```
+This allows you to access the credits without ever completing a single challenge.
+![easy victory 1](images/victory_bypass.png)
+![easy victory 2](images/victory_bypass_2.png)
 
 
 ## Terminal Challenges
