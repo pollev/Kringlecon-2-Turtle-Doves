@@ -2,7 +2,7 @@
 This writeup is the collaborative work of:
 - Jan D'Herdt
 - Polle Vanhoof
-- Honorable Mention goes out to Tudor Azoitei for letting us pick his brain when we got stuck now and then.
+- Honorable Mention goes out to Tudor Azoitei
 
 For the 2019 SANS holiday hack challenge, Jan and myself decided to work together and tackle the interesting challenges presented by the SANS team. In the end, we completed all the challenges and objectives. As a nice bonus, we even stubled upon an oversight that allowed us to bypass all challenges and complete the game without completing any challenge.
 
@@ -57,7 +57,7 @@ A few hours later and [santas_little_helper.py](https://github.com/pollev/santas
 The following sections group the data we collected through the script.
 
 ### Locations
-#### The Quad
+#### Zone: The Quad
 Map:
 ```
            111            111
@@ -116,7 +116,7 @@ NPCs:
 Terminals:
 - Frosty Keypad
 
-#### Student Union
+#### Zone: Student Union
 Map:
 ```
 1   11   1    11   1   1
@@ -145,7 +145,7 @@ NPCs:
 Terminals:
 - Smart Braces
 
-#### Sleigh Workshop
+#### Zone: Sleigh Workshop
 Map:
 ```
            1
@@ -170,7 +170,7 @@ Terminals:
 - Zeek JSON Analysis
 - Sleigh Route Finder
 
-#### The Bell Tower
+#### Zone: The Bell Tower
 Map:
 ```
 111111
@@ -191,7 +191,7 @@ NPCs:
 
 Terminals:
 
-#### Hermey Hall
+#### Zone: Hermey Hall
 Map:
 ```
       1     1
@@ -213,7 +213,7 @@ NPCs:
 Terminals:
 - Linux Path
 
-#### NetWars
+#### Zone: NetWars
 Map:
 ```
 111111111111111
@@ -235,7 +235,7 @@ NPCs:
 Terminals:
 - Mongo Pilfer
 
-#### Speaker UNpreparedness Room
+#### Zone: Speaker UNpreparedness Room
 Map:
 ```
    11111
@@ -254,7 +254,7 @@ NPCs:
 Terminals:
 - Nyanshell
 
-#### Track 1 to Track 7
+#### Zone: Track 1 to Track 7
 Map:
 ```
 1111111
@@ -273,7 +273,7 @@ NPCs:
 
 Terminals:
 
-#### The Laboratory
+#### Zone: The Laboratory
 Map:
 ```
 111111111
@@ -294,7 +294,7 @@ NPCs:
 Terminals:
 - Xmas Cheer Laser
 
-#### Dorm
+#### Zone: Dorm
 Map:
 ```
          11111111111111
@@ -317,7 +317,7 @@ Terminals:
 - Holiday Hack Trail
 - Graylog
 
-#### Minty's Dorm Room
+#### Zone: Minty's Dorm Room
 Map:
 ```
       1
@@ -334,7 +334,7 @@ NPCs:
 Terminals:
 - Key Cutting Machine
 
-#### Minty's Closet
+#### Zone: Minty's Closet
 Map:
 ```
  1
@@ -349,7 +349,7 @@ NPCs:
 Terminals:
 - Mysterious Locked Door
 
-#### Steam Tunnels
+#### Zone: Steam Tunnels
 Map:
 ```
  11111
@@ -379,7 +379,7 @@ NPCs:
 Terminals:
 - Frido Sleigh Contest
 
-#### Train Station
+#### Zone: Train Station
 Map:
 ```
          11111
