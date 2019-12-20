@@ -14,9 +14,8 @@ This writeup is split into several sections
 
 1. [Information Gathering](#information-gathering)
    1. [Interacting with the game over websocket](#interacting-with-the-game-over-websocket)
-   2. [Locations](#locations)
-   3. [Notable Characters](#notable-characters)
-   4. [Oversight: End-Credits Bypass](#oversight-end-credits-bypass)
+   2. [Locations and Notable Characters](#locations-and-notable-characters)
+   3. [Oversight: End-Credits Bypass](#oversight-end-credits-bypass)
 2. [Terminal Challenges](#terminal-challenges)
    1. [Escape Ed](#escape-ed)
    2. [Frosty Keypad](#frosty-keypad)
@@ -56,7 +55,7 @@ A few hours later and [santas_little_helper.py](https://github.com/pollev/santas
 
 The following sections group the data we collected through the script.
 
-### Locations
+### Locations and Notable Characters
 #### Zone: The Quad
 Map:
 ```
