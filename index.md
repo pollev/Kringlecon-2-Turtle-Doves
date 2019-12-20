@@ -1,7 +1,7 @@
 # Kringlecon 2: Turtle Doves
 This writeup is the collaborative work of:
-- Jan D'Herdt
 - Polle Vanhoof
+- Jan D'Herdt
 - Honorable Mention goes out to Tudor Azoitei
 
 For the 2019 SANS holiday hack challenge, Jan and myself decided to work together and tackle the interesting challenges presented by the SANS team. In the end, we completed all the challenges and objectives. As a nice bonus, we even stubled upon an oversight that allowed us to bypass all challenges and complete the game without completing any challenge.
