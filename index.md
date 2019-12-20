@@ -2,10 +2,11 @@
 This writeup is the collaborative work of:
 - Jan D'Herdt
 - Polle Vanhoof
+- Honorable Mention goes out to Tudor Azoitei for letting us pick his brain when we got stuck now and then.
 
 For the 2019 SANS holiday hack challenge, Jan and myself decided to work together and tackle the interesting challenges presented by the SANS team. In the end, we completed all the challenges and objectives. As a nice bonus, we even stubled upon an oversight that allowed us to bypass all challenges and complete the game without completing any challenge.
 
-We hope you enjoy this writeup and maybe learn something from it as well.
+We hope you enjoy this writeup as much as we enjoyed the game.
 
 ## Table of Contents
 
@@ -26,6 +27,7 @@ This writeup is split into several sections
    7. [Holiday Hack Trail](#holiday-hack-trail)
    8. [Graylog](#graylog)
    9. [Powershell Laser](#powershell-laser)
+   10. [Sleigh Route Finder](#sleigh-route-finder)
 3. [Objectives](#objectives)
    0. [Talk to Santa in the Quad](#talk-to-santa-in-the-quad)
    1. [Find the Turtle Doves](#find-the-turtle-doves)
@@ -44,19 +46,350 @@ This writeup is split into several sections
 
 ## Information Gathering
 ### Interacting with the game over websocket
-todo
+
+The game started on a Friday evening and my colleague and I had agreed to start it together on Monday.
+As a result, I was eagerly looking at the start of the event and trying to do anything other than actually working on the challenges.
+
+I figured I would see how the game worked behind the scenes and started looking at the websocket traffic between my client and the server.
+This quickly turned into a small project of itself. Soon I had a small script running and I decided I would use it handle most of the information gathering.
+A few hours later and [santas_little_helper.py](https://github.com/pollev/santas_little_helper) was born.
+
+The following sections group the data we collected through the script.
+
 ### Locations
-todo
+#### The Quad
+Map:
+               111            111
+               111            111
+               111            111
+               111            111
+               111            111
+               111            111
+       1111111111111111111111111111111111111
+       1111111111111111111111111111111111111
+       1111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     11111111111111111     11111111111111111
+    111111111111111111     111111111111111111
+    111111111111111111     111111111111111111
+     11111111111111111     111111111111111
+     11111111111111111     111111111111111
+     1111111111111111111111111111111111111
+     1111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     1111111111111111111 1111111111111111111
+     1111111111111111111 1111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+     111111111111111111111111111111111111111
+                       111
+
+NPCs:
+- Santa
+- Tangle Coalbox
+
+Terminals:
+- Frosty Keypad
+
+#### Student Union
+Map:
+1   11   1    11   1   1
+11 1111 11    111 111 11
+1111111111 1111111111111
+111111111111111111111111 1
+111111111111111111111111 1
+11111111111111111111111111
+111111111111  111111111111
+  1111111111  1111111111111
+  1111111111111111111111111
+111111111111111111111111111
+111111111111111111111111111
+   111            111
+
+NPCs:
+- Shinny Upatree
+- Kent Tinseltooth
+- Google Booth
+- SANS.edu Booth
+- Splunk Booth
+- Swag Booth
+- Michael and Jane - Two Turtle Doves
+
+Terminals:
+- Smart Braces
+
+#### Sleigh Workshop
+Map:
+           1
+   111  111111
+    11  1111
+111 11  1111
+11111111111111
+11111111111111
+1111111111 111
+1111111111 111
+1111  1  11111
+11111111111111
+ 1
+
+NPCs:
+- Wunorse Openslae
+- Krampus
+- The Tooth Fairy
+
+Terminals:
+- Zeek JSON Analysis
+- Sleigh Route Finder
+
+#### The Bell Tower
+Map:
+111111
+111
+111 1 1
+1 111 1
+1 11111
+1111111
+1111111
+      1
+
+NPCs:
+- Krampus
+- The Tooth Fairy
+- Santa
+- Tooth
+
+Terminals:
+
+#### Hermey Hall
+Map:
+      1     1
+    1111  111111
+    1111  111111
+  11111111111111  1   1   1   1   1   1   1
+1111111111111111 111111111111111111111111111
+11111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111
+11111111111111111111111111111111111111111111
+  11111111111111
+  11111111111111
+        111
+
+NPCs:
+- SugarPlum Mary
+
+Terminals:
+- Linux Path
+
+#### NetWars
+Map:
+111111111111111
+111111111111  1
+11    111     1
+111111111111111
+111111111111111
+111111111111111
+11    111    11
+111111111111111
+111111111111111
+111111111111111
+       1
+
+NPCs:
+- Holly Evergreen
+
+Terminals:
+- Mongo Pilfer
+
+#### Speaker UNpreparedness Room
+Map:
+   11111
+   11111
+11111  1
+11111  1
+11111111
+11111111
+11111111
+  1
+
+NPCs:
+- Alabaster Snowball
+
+Terminals:
+- Nyanshell
+
+#### Track 1 to Track 7
+Map:
+1111111
+1111111
+1111111
+1111111
+1111111
+1111111
+1111111
+1111111
+1111111
+   1
+
+NPCs:
+
+Terminals:
+
+#### The Laboratory
+Map:
+111111111
+1111111111 111
+1111111111 111
+111    1111111
+11     11111111
+11  11111111111
+111111111111111
+111111111111111
+11111111111111
+
+NPCs:
+- Sparkle Redberry
+- Professor Banas
+
+Terminals:
+- Xmas Cheer Laser
+
+#### Dorm
+Map:
+         11111111111111
+           1111  111111
+           1111  111111            1
+1111111111111111111111111111  1111111
+1111111111111111111111111111  1111111
+111111111111 111111 11111111111111111
+1111111111111111111111111111111111111
+         11111111111111
+         11111111111111
+               111
+
+NPCs:
+- Pepper Minstix
+- Minty Candycane
+
+Terminals:
+- Holiday Hack Trail
+- Graylog
+
+#### Minty's Dorm Room
+Map:
+      1
+  1   1
+  111111
+  111111
+11111111
+11111111
+  1
+
+NPCs:
+
+Terminals:
+- Key Cutting Machine
+
+#### Minty's Closet
+Map:
+ 1
+ 11
+111
+111
+ 1
+
+NPCs:
+
+Terminals:
+- Mysterious Locked Door
+
+#### Steam Tunnels
+Map:
+ 11111
+11111111111111
+111111111111111
+111111111111111
+ 11111      111
+   1        111
+            111
+            111
+            111
+            111
+            111
+            111
+            111
+            111       1111111   1
+            111      111111111 11
+            1111111111111111 1111
+            1111111111111111 1111
+            111111111111111111111
+                     111111111111
+
+NPCs:
+- Krampus
+
+Terminals:
+- Frido Sleigh Contest
+
+#### Train Station
+Map:
+         11111
+         11111
+         11111
+         11111
+11111111111111111111111
+111111111111111111111
+  1111111111 1111  11
+  1111111111 1111  1111
+11111111111111111111111
+11111111111111111111111
+11111111111111111111111
+11111111111111111111111
+
+NPCs:
+- Bushy Evergreen
+- Santa
+
+Terminals:
+- Escape Ed
+
+
 ### Notable Characters
 todo
+
 ### Oversight: End-Credits Bypass
 todo
+
 
 ## Terminal Challenges
 todo
 
+
 ## Objectives
 todo
+
 
 ## Addendum
 todo
