@@ -8,6 +8,7 @@ For the 2019 SANS holiday hack challenge, Jan and myself decided to work togethe
 
 We hope you enjoy this writeup as much as we enjoyed the game.
 
+-----------------------------
 ## Table of Contents
 
 This writeup is split into several sections
@@ -43,6 +44,7 @@ This writeup is split into several sections
    12. [Filter Out Poisoned Sources of Weather Data](#filter-out-poisoned-sources-of-weather-data)
 4. [Addendum](#addendum)
 
+-----------------------------
 ## Information Gathering
 ### Interacting with the game over websocket
 
@@ -55,6 +57,7 @@ A few hours later and [santas_little_helper.py](https://github.com/pollev/santas
 
 The following sections group the data we collected through the script.
 
+-----------------------------
 ### Locations and Notable Characters
 #### Zone: The Quad
 Map:
@@ -403,6 +406,7 @@ Terminals:
 - Escape Ed
 
 
+-----------------------------
 ### Oversight: End-Credits Bypass
 While working on the data gathering script, I realized that I would need to automate the movement from room to room. The script could only pull data for a location after physically moving my character there. So I started working on a 'teleportation' option. The script interacts with the backend directly to move my character from room to room, it then grabs all zone information it finds and stores it.
 
@@ -470,10 +474,12 @@ This allows you to access the credits without ever completing a single challenge
 
 ... And that is the story of how I had to tell my colleague why I had already completed the game even though we had agreed not to play. These things happen...
 
+-----------------------------
 ## Terminal Challenges
 
 Alright, with that out of the way, let us move on to the actual challenges!
 
+-----------------------------
 ### Escape Ed
 #### Context
 Initial Dialog:
@@ -511,34 +517,44 @@ Ed is a really old text editor, we can exit it with a simple command:
 Type 'Q' and enter
 ```
 
+-----------------------------
 ### Frosty Keypad
 todo
 
+-----------------------------
 ### Linux Path
 todo
 
+-----------------------------
 ### Nyanshell
 todo
 
+-----------------------------
 ### Mongo Pilfer
 todo
 
+-----------------------------
 ### Smart Braces
 todo
 
+-----------------------------
 ### Holiday Hack Trail
 todo
 
+-----------------------------
 ### Graylog
 todo
 
+-----------------------------
 ### Powershell Laser
 todo
 
+-----------------------------
 ### Sleigh Route Finder
 todo
 
 
+-----------------------------
 ## Objectives
 todo
 
