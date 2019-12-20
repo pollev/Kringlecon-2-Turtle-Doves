@@ -466,6 +466,7 @@ This allows you to access the credits without ever completing a single challenge
 ![easy victory 1](images/victory_bypass.png)
 ![easy victory 2](images/victory_bypass_2.png)
 
+... And that is how I had to tell my colleague why I had already completed the game even though we had agreed not to play.
 
 ## Terminal Challenges
 
