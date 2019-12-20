@@ -404,7 +404,9 @@ Terminals:
 
 
 ### Oversight: End-Credits Bypass
-While working on the data gathering script, I realized that I would need to automate the movement from room to room. The script could only pull data for a location after physically moving my character there. So I started working on a 'teleportation' option. The script interacts with the backend directly to move my character from room to room, it then grabs all zone information it finds and stores it. Part of that info is the exits for that specific room. That way, once we enter a zone, we can autoamtically figure out new locations we can go to and the script can then automate going to those new zones as well.
+While working on the data gathering script, I realized that I would need to automate the movement from room to room. The script could only pull data for a location after physically moving my character there. So I started working on a 'teleportation' option. The script interacts with the backend directly to move my character from room to room, it then grabs all zone information it finds and stores it.
+
+That info includes the new exit-portals for that specific zone. That means that, once we enter a zone, we can autoamtically figure out new locations we can go to and the script can then automate going to those new zones as well.
 
 It turns out however that certain zones, which are supposed to only be accessible after completion of an objective, are still accessible if interacting with the websocket in this manner.
 It is the client which refuses to enter these zones. The portals to the zones still exist, and we can force our way in by sending the appropriate command to the server. It seems the devs forgot to do some server side validation here.
@@ -466,7 +468,7 @@ This allows you to access the credits without ever completing a single challenge
 ![easy victory 1](images/victory_bypass.png)
 ![easy victory 2](images/victory_bypass_2.png)
 
-... And that is how I had to tell my colleague why I had already completed the game even though we had agreed not to play.
+... And that is the story of how I had to tell my colleague why I had already completed the game even though we had agreed not to play.
 
 ## Terminal Challenges
 
