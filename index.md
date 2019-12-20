@@ -1,37 +1,62 @@
-## Welcome to GitHub Pages
+# Kringlecon 2: Turtle Doves
+This writeup is the collaborative work of:
+- Jan D'Herdt
+- Polle Vanhoof
 
-You can use the [editor on GitHub](https://github.com/pollev/Kringlecon-2-Turtle-Doves/edit/master/index.md) to maintain and preview the content for your website in Markdown files.
+For the 2019 SANS holiday hack challenge, Jan and myself decided to work together and tackle the interesting challenges presented by the SANS team. In the end, we completed all the challenges and objectives. As a nice bonus, we even stubled upon an oversight that allowed us to bypass all challenges and complete the game without completing any challenge.
 
-Whenever you commit to this repository, GitHub Pages will run [Jekyll](https://jekyllrb.com/) to rebuild the pages in your site, from the content in your Markdown files.
+We hope you enjoy this writeup and maybe learn something from it as well.
 
-### Markdown
+## Table of Contents
 
-Markdown is a lightweight and easy-to-use syntax for styling your writing. It includes conventions for
+This writeup is split into several sections
 
-```markdown
-Syntax highlighted code block
+1. [Information Gathering](#Information-Gathering)
+   1. Interacting with the game over websocket
+   2. Locations
+   3. Notable Characters
+   4. Oversight: End-Credits Bypass
+2. [Terminal Challenges](#Terminal-Challenges)
+   1. Escape Ed
+   2. Frosty Keypad
+   3. Linux Path
+   4. Nyanshell
+   5. Mongo Pilfer
+   6. Smart Braces
+   7. Holiday Hack Trail
+   8. Graylog
+   9. Powershell Laser
+3. [Objectives](#Objectives)
+   0. Talk to Santa in the Quad
+   1. Find the Turtle Doves
+   2. Unredact Threatening Document
+   3. Windows Log Analysis: Evaluate Attack Outcome
+   4. Windows Log Analysis: Determine Attacker Technique
+   5. Network Log Analysis: Determine Compromised System
+   6. Splunk
+   7. Get Access To The Steam Tunnels
+   8. Bypassing the Frido Sleigh CAPTEHA
+   9. Retrieve Scraps of Paper from Server
+   10. Recover Cleartext Document
+   11. Open the Sleigh Shop Door
+   12. Filter Out Poisoned Sources of Weather Data
+4. [Addendum](#Addendum)
 
-# Header 1
-## Header 2
-### Header 3
+## Information Gathering
+### Interacting with the game over websocket
+todo
+### Locations
+todo
+### Notable Characters
+todo
+### Oversight: End-Credits Bypass
+todo
 
-- Bulleted
-- List
+## Terminal Challenges
+todo
 
-1. Numbered
-2. List
+## Objectives
+todo
 
-**Bold** and _Italic_ and `Code` text
-
-[Link](url) and ![Image](src)
-```
-
-For more details see [GitHub Flavored Markdown](https://guides.github.com/features/mastering-markdown/).
-
-### Jekyll Themes
-
-Your Pages site will use the layout and styles from the Jekyll theme you have selected in your [repository settings](https://github.com/pollev/Kringlecon-2-Turtle-Doves/settings). The name of this theme is saved in the Jekyll `_config.yml` configuration file.
-
-### Support or Contact
-
-Having trouble with Pages? Check out our [documentation](https://help.github.com/categories/github-pages-basics/) or [contact support](https://github.com/contact) and we’ll help you sort it out.
+## Addendum
+todo
