@@ -507,8 +507,9 @@ trainstation (Train Station)
 
 #### Solution
 Ed is a really old text editor, we can exit it with a simple command:
+```
 Type 'Q' and enter
-
+```
 
 ### Frosty Keypad
 todo
