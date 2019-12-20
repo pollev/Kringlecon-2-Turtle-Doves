@@ -479,7 +479,6 @@ This allows you to access the credits without ever completing a single challenge
 
 Alright, with that out of the way, let us move on to the actual challenges!
 
------------------------------
 ### Escape Ed
 #### Context
 Initial Dialog:
@@ -493,7 +492,7 @@ Bushy Evergreen
 
 
 Completed Dialog:
-NPC: Bushy Evergreen
+Bushy Evergreen
 > Wow, that was much easier than I'd thought.
 > Maybe I don't need a clunky GUI after all!
 > Have you taken a look at the password spray attack artifacts?
@@ -503,11 +502,11 @@ NPC: Bushy Evergreen
 > He lives in Maine - not too far from here!
 
 
-Challenge-url:
+Challenge-url:  
 https://docker2019.kringlecon.com/?challenge=edescape
 
 
-Location:
+Location:  
 trainstation (Train Station)
 
 
