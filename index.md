@@ -1307,7 +1307,7 @@ Alternatively, we can look for
 ```
 ProcessImage:/.+cookie_recipe.exe/
 ```
-And find the EventId of 3 (network traffic)
+And find the EventID of 3 (network traffic)
 
 ##### Challenge 3
 Objective:
@@ -1336,11 +1336,11 @@ ParentProcessImage:/.+cookie_recipe.+/
 ```
 And then track the userAccount value for each process over time.
 We will see that soon the user executing commands with the cookie scripts as parent process is no longer minty.
-The last action executed as minty shows us the process used to escalate
+The last action executed as minty shows us the process used to escalate.
 
 ![Graylog Privesc](images/graylog_last_user.png)
 
-Do note that our regex search includes both the `cookie_recipe.exe` and `cookie_recipe2.exe` processes
+Do note that our regex search includes both the `cookie_recipe.exe` and `cookie_recipe2.exe` processes.
 
 
 ##### Challenge 5
@@ -1369,7 +1369,7 @@ Solution:
 Search:  
 Windows Event Id 4624 is generated when a user network logon occurs successfully. We can also filter on the attacker's IP using SourceNetworkAddress.
 ```
-EventId: 4624
+EventID: 4624 AND SourceNetworkAddress:192.168.247.175
 ```
 
 
