@@ -510,6 +510,39 @@ Location:
 trainstation (Train Station)
 
 
+#### MOTD
+When we start the terminal, we are greeted with the following message:
+```
+                  ........................................
+               .;oooooooooooool;,,,,,,,,:loooooooooooooll:
+             .:oooooooooooooc;,,,,,,,,:ooooooooooooollooo:
+           .';;;;;;;;;;;;;;,''''''''';;;;;;;;;;;;;,;ooooo:
+         .''''''''''''''''''''''''''''''''''''''''';ooooo:
+       ;oooooooooooool;''''''',:loooooooooooolc;',,;ooooo:
+    .:oooooooooooooc;',,,,,,,:ooooooooooooolccoc,,,;ooooo:
+  .cooooooooooooo:,''''''',:ooooooooooooolcloooc,,,;ooooo,
+  coooooooooooooo,,,,,,,,,;ooooooooooooooloooooc,,,;ooo,
+  coooooooooooooo,,,,,,,,,;ooooooooooooooloooooc,,,;l'
+  coooooooooooooo,,,,,,,,,;ooooooooooooooloooooc,,..
+  coooooooooooooo,,,,,,,,,;ooooooooooooooloooooc.
+  coooooooooooooo,,,,,,,,,;ooooooooooooooloooo:.
+  coooooooooooooo,,,,,,,,,;ooooooooooooooloo;
+  :llllllllllllll,'''''''';llllllllllllllc,
+
+
+
+Oh, many UNIX tools grow old, but this one's showing gray.
+That Pepper LOLs and rolls her eyes, sends mocking looks my way.
+I need to exit, run - get out! - and celebrate the yule.
+Your challenge is to help this elf escape this blasted tool.
+
+-Bushy Evergreen
+
+Exit ed.
+
+1100
+```
+
 #### Solution
 Ed is a really old text editor, we can exit it with a simple command:
 ```
