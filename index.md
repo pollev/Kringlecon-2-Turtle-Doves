@@ -1290,8 +1290,8 @@ TargetFilename:/.+cookie.+/
 
 ##### Challenge 2
 Objective:
-The malicious file downloaded and executed by Minty gave the attacker remote access to his machine.
-What was the ip:port the malicious file connected to first?
+> The malicious file downloaded and executed by Minty gave the attacker remote access to his machine.
+> What was the ip:port the malicious file connected to first?
 
 Solution:
 > 192.168.247.175:4444
@@ -1309,13 +1309,127 @@ ProcessImage:/.+cookie_recipe.exe/
 And find the EventId of 3 (network traffic)
 
 ##### Challenge 3
+Objective:
+> What was the first command executed by the attacker?
+
+Solution:
+> whoami
+
+Search:  
+We can search for all commands (processes) that have the cookie recipe as the parent process
+```
+ParentProcessImage:/.+cookie_recipe.+/
+```
+
 ##### Challenge 4
+Objective:
+> What is the one-word service name the attacker used to escalate privileges?
+
+Solution:
+> webexservice
+
+Search:  
+We can reuse the last search we did
+```
+ParentProcessImage:/.+cookie_recipe.+/
+```
+And then track the userAccount value for each process over time.
+We will see that soon the user executing commands with that parent process is no longer minty.
+The last action executed as minty shows us the process used to escalate
+
+
 ##### Challenge 5
+Objective:
+> What is the file-path + filename of the binary ran by the attacker to dump credentials?
+
+Solution:
+> C:\cookie.exe
+
+Search:  
+We continue with the same search string we were using before.
+```
+ParentProcessImage:/.+cookie_recipe.+/
+```
+We see that the attacker mistypes and tries to run mimikatz. He then corrects himself and runs the binary named cookie.exe.
+
+
 ##### Challenge 6
+Objective:
+> The attacker pivoted to another workstation using credentials gained from Minty's computer.
+> Which account name was used to pivot to another machine?
+
+Solution:
+> alabaster
+
+Search:  
+Windows Event Id 4624 is generated when a user network logon occurs successfully. We can also filter on the attacker's IP using SourceNetworkAddress.
+```
+EventId: 4624
+```
+
+
 ##### Challenge 7
+Objective:
+> What is the time ( HH:MM:SS ) the attacker makes a Remote Desktop connection to another machine?
+
+Solution:
+> 06:04:28
+
+Search:  
+LogonType 10 is used for successful network connections using the RDP client.
+```
+EventID: 4624 AND LogonType:10
+```
+
 ##### Challenge 8
+Objective:
+> The attacker navigates the file system of a third host using their Remote Desktop Connection to the second host.
+> What is the SourceHostName,DestinationHostname,LogonType of this connection?
+
+Solution:
+> elfu-res-wks2,elfu-res-wks3,3
+
+Search:  
+The attacker has GUI access to workstation 2 via RDP.
+They likely use this GUI connection to access the file system of workstation 3 using explorer.exe via UNC file paths 
+This is likely why we don't see any cmd.exe or powershell.exe processes.
+```
+SourceHostName:"ELFU-RES-WKS2" AND EventID:4624
+```
+However, we still see the successful network authentication for this with event id 4624 and logon type 3.
+
 ##### Challenge 9
+Objective:
+> What is the full-path + filename of the secret research document after being transferred from the third host to the second host?
+
+Solution:
+> C:\Users\alabaster\Desktop\super\_secret\_elfu\_research.pdf
+
+Search:  
+We can look for sysmon file creation event id of 2 with a source of workstation 2.
+We can also use regex to filter out overly common file paths using something like:
+```
+source:"elfu-res-wks2" AND EventID:2 AND NOT TargetFilename:/.+AppData.+/ AND NOT TargetFilename:/.+updatestore.+/ AND NOT TargetFilename:/.+AppData.+/
+```
+
 ##### Challenge 10
+Objective:
+> What is the IPv4 address (as found in logs) the secret research document was exfiltrated to?
+
+Solution:
+> 104.22.3.84
+
+Search:  
+We can look for the original document in CommandLine using regex.
+```
+super_secret_elfu_research.pdf
+```
+When we do that, we see a long a long PowerShell command using Invoke-Webrequest to a remote URL of https://pastebin.com/post.php.
+We can pivot off of this information to look for a sysmon network connection id of 3 with a source of elfu-res-wks2 and DestinationHostname of pastebin.com.
+
+Alternatively, select the poweshell command and view events in a 5 seconds window around it.
+
+That is all for the graylog terminal!
 
 -----------------------------
 ### Powershell Laser
