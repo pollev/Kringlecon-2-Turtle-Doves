@@ -1135,7 +1135,7 @@ Location:
 Dorm
 
 #### Game Overview
-The game is a reference to legendary game series [Oregon Trail](https://en.wikipedia.org/wiki/The_Oregon_Trail_(series)).
+The game is a reference to the legendary game series [Oregon Trail](https://en.wikipedia.org/wiki/The_Oregon_Trail_(series)).
 When we start we get to select our difficulty. The difficulty refers to how hard it is to hack into the game, not just the difficulty of the game itself.
 The game can be properly played, but the goal is ofcourse to win it by cheating.
 
@@ -1147,11 +1147,11 @@ First we can select our difficulty:
 
 ![Trail Select Game](images/trail_select_game.png)
 
-Then we always start at the following shop screen, there are some interesting things you can do here, but all challenges can be solved without really interacting with this screen. So we just always accept the default values and continue.
+Then we always start at the following shop screen. There are some interesting things you can do here, but all challenges can be solved without really interacting with this screen. So we just always accept the default values and continue.
 
 ![Trail Shop](images/trail_shop.png)
 
-This is what the game itself looks like. Note the 'URL-bar' to simulate a real browser game.
+The next image shows what the game itself looks like. Note the 'URL-bar' to simulate a real browser game.
 The goal is to cover the distance of 8000 without losing all your characters. Pressing 'Go' will increase your distance travelled and trigger all kinds of events.
 
 ![Trail Easy](images/trail_easy.png)
@@ -1240,8 +1240,74 @@ todo
 
 -----------------------------
 ## Objectives
+Clearing out the terminals has given us all the possible hints we could need for doing the objectives.
+The objectives are narative based challenges for this game, they will progress us throught the Kringlecon 2 story and help us save the holiday period.
+Lets get started!
+
+### Talk to Santa in the Quad
 todo
 
 
+-----------------------------
+### Find the Turtle Doves
+todo
+
+
+-----------------------------
+### Unredact Threatening Document
+todo
+
+
+-----------------------------
+### Windows Log Analysis: Evaluate Attack Outcome
+todo
+
+
+-----------------------------
+### Windows Log Analysis: Determine Attacker Technique
+todo
+
+
+-----------------------------
+### Network Log Analysis: Determine Compromised System
+todo
+
+
+-----------------------------
+### Splunk
+todo
+
+
+-----------------------------
+### Get Access To The Steam Tunnels
+todo
+
+
+-----------------------------
+### Bypassing the Frido Sleigh CAPTEHA
+todo
+
+
+-----------------------------
+### Retrieve Scraps of Paper from Server
+todo
+
+
+-----------------------------
+### Recover Cleartext Document
+todo
+
+
+-----------------------------
+### Open the Sleigh Shop Door
+todo
+
+
+-----------------------------
+### Filter Out Poisoned Sources of Weather Data
+todo
+
+
+-----------------------------
 ## Addendum
 todo
