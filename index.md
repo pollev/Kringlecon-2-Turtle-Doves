@@ -1300,8 +1300,9 @@ Search:
 ```
 CommandLine:/.+cookie_recipe.exe/
 ```
-Now find the execution of the .exe and search for events in a scope of 1 minute around that event
-We then also quickly find the network connection  
+Now find the execution of the .exe and search for events in a scope of 1 minute around that event.
+We then also quickly find the network connection.  
+
 Alternatively, we can look for
 ```
 ProcessImage:/.+cookie_recipe.exe/
@@ -1336,6 +1337,8 @@ ParentProcessImage:/.+cookie_recipe.+/
 And then track the userAccount value for each process over time.
 We will see that soon the user executing commands with that parent process is no longer minty.
 The last action executed as minty shows us the process used to escalate
+
+![Graylog Privesc](images/graylog_last_user.png)
 
 
 ##### Challenge 5
