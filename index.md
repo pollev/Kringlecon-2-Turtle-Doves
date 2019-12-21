@@ -1396,7 +1396,7 @@ Solution:
 
 Search:  
 The attacker has GUI access to workstation 2 via RDP.
-They likely use this GUI connection to access the file system of workstation 3 using explorer.exe via UNC file paths 
+They likely use this GUI connection to access the file system of workstation 3 using explorer.exe via UNC file paths.
 This is likely why we don't see any cmd.exe or powershell.exe processes.
 ```
 SourceHostName:"ELFU-RES-WKS2" AND EventID:4624
@@ -1429,7 +1429,7 @@ We can look for the original document in CommandLine using regex.
 ```
 super_secret_elfu_research.pdf
 ```
-When we do that, we see a long a long PowerShell command using Invoke-Webrequest to a remote URL of https://pastebin.com/post.php.
+When we do that, we see a long PowerShell command using Invoke-Webrequest to a remote URL of https://pastebin.com/post.php.
 We can pivot off of this information to look for a sysmon network connection id of 3 with a source of elfu-res-wks2 and DestinationHostname of pastebin.com.
 
 Alternatively, select the poweshell command and view events in a 5 seconds window around it.
