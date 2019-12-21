@@ -1044,6 +1044,7 @@ When we start the terminal, we are greeted with the following message (I added a
 
 #### Solution
 This challenge is timed. You need to complete the iptables rules within 5 minutes. Note that there is nothing stopping you from trying multiple times. So the time limitation is not much of a problem.
+We start by checking out the IOT Teeth Braces document:
 ```
 elfuuser@e8bce7331ea7:~$ cat /home/elfuuser/IOTteethBraces.md 
 # ElfU Research Labs - Smart Braces
