@@ -1335,10 +1335,12 @@ We can reuse the last search we did
 ParentProcessImage:/.+cookie_recipe.+/
 ```
 And then track the userAccount value for each process over time.
-We will see that soon the user executing commands with that parent process is no longer minty.
+We will see that soon the user executing commands with the cookie scripts as parent process is no longer minty.
 The last action executed as minty shows us the process used to escalate
 
 ![Graylog Privesc](images/graylog_last_user.png)
+
+Do note that our regex search includes both the `cookie_recipe.exe` and `cookie_recipe2.exe` processes
 
 
 ##### Challenge 5
