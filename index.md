@@ -670,7 +670,7 @@ Get a listing (ls) of your current directory.
 #### Solution
 We quickly see that someone has messed with the path.
 
-```bash
+```
 elf@bd2b9636c43a:~$ ls
 This isn't the ls you're looking for
 elf@bd2b9636c43a:~$ which ls
@@ -684,7 +684,7 @@ As a result, linux will search that path first and find the bad `ls` binary and 
 We could now fix the path, or just use the correct binary directly.
 So we just run `/bin/ls` instead.
 
-```bash
+```
 elf@bd2b9636c43a:~$ /bin/ls
 ```
 
@@ -693,7 +693,149 @@ That's it. We are done.
 
 -----------------------------
 ### Nyanshell
-todo
+#### Context
+Initial Dialog:
+Alabaster Snowball
+> Welcome to the Speaker UNpreparedness Room!
+> My name's Alabaster Snowball and I could use a hand.
+> I'm trying to log into this terminal, but something's gone horribly wrong.
+> Every time I try to log in, I get accosted with ... a hatted cat and a toaster pastry?
+> I thought my shell was Bash, *not* flying feline.
+> When I try to overwrite it with something else, I get permission errors.
+> Have you heard any chatter about immutable files? And what is `sudo -l` telling me?
+
+Completed Dialog:
+Alabaster Snowball
+> Who would do such a thing??  Well, it IS a good looking cat.
+> Have you heard about the Frido Sleigh contest?
+> There are some serious prizes up for grabs.
+> The content is strictly for elves. Only elves can pass the CAPTEHA challenge required to enter.
+> I heard there was a talk at KCII about using machine learning to defeat challenges like this.
+> I don't think anything could ever beat an elf though!
+
+
+Challenge-url:  
+https://docker2019.kringlecon.com/?challenge=nyanshell
+
+Location:  
+Speaker UNpreparedness Room
+
+
+#### MOTD
+When we start the terminal, we are greeted with the following message:
+```
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄░░░░░░░░░
+░░░░░░░░▄▀░░░░░░░░░░░░▄░░░░░░░▀▄░░░░░░░
+░░░░░░░░█░░▄░░░░▄░░░░░░░░░░░░░░█░░░░░░░
+░░░░░░░░█░░░░░░░░░░░░▄█▄▄░░▄░░░█░▄▄▄░░░
+░▄▄▄▄▄░░█░░░░░░▀░░░░▀█░░▀▄░░░░░█▀▀░██░░
+░██▄▀██▄█░░░▄░░░░░░░██░░░░▀▀▀▀▀░░░░██░░
+░░▀██▄▀██░░░░░░░░▀░██▀░░░░░░░░░░░░░▀██░
+░░░░▀████░▀░░░░▄░░░██░░░▄█░░░░▄░▄█░░██░
+░░░░░░░▀█░░░░▄░░░░░██░░░░▄░░░▄░░▄░░░██░
+░░░░░░░▄█▄░░░░░░░░░░░▀▄░░▀▀▀▀▀▀▀▀░░▄▀░░
+░░░░░░█▀▀█████████▀▀▀▀████████████▀░░░░
+░░░░░░████▀░░███▀░░░░░░▀███░░▀██▀░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+
+nyancat, nyancat
+I love that nyancat!
+My shell's stuffed inside one
+Whatcha' think about that?
+
+Sadly now, the day's gone
+Things to do!  Without one...
+I'll miss that nyancat
+Run commands, win, and done!
+
+Log in as the user alabaster_snowball with a password of Password2, and land in a Bash prompt.
+
+Target Credentials:
+
+username: alabaster_snowball
+password: Password2
+```
+
+#### Solution
+We look at '/etc/passwd' to see what shell is being loaded for alabaster snowball:
+
+```
+elf@1fd924a3fa2c:~$ cat /etc/passwd
+root:x:0:0:root:/root:/bin/bash
+daemon:x:1:1:daemon:/usr/sbin:/usr/sbin/nologin
+bin:x:2:2:bin:/bin:/usr/sbin/nologin
+sys:x:3:3:sys:/dev:/usr/sbin/nologin
+sync:x:4:65534:sync:/bin:/bin/sync
+games:x:5:60:games:/usr/games:/usr/sbin/nologin
+man:x:6:12:man:/var/cache/man:/usr/sbin/nologin
+lp:x:7:7:lp:/var/spool/lpd:/usr/sbin/nologin
+mail:x:8:8:mail:/var/mail:/usr/sbin/nologin
+news:x:9:9:news:/var/spool/news:/usr/sbin/nologin
+uucp:x:10:10:uucp:/var/spool/uucp:/usr/sbin/nologin
+proxy:x:13:13:proxy:/bin:/usr/sbin/nologin
+www-data:x:33:33:www-data:/var/www:/usr/sbin/nologin
+backup:x:34:34:backup:/var/backups:/usr/sbin/nologin
+list:x:38:38:Mailing List Manager:/var/list:/usr/sbin/nologin
+irc:x:39:39:ircd:/var/run/ircd:/usr/sbin/nologin
+gnats:x:41:41:Gnats Bug-Reporting System (admin):/var/lib/gnats:/usr/sbin/nologin
+nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin
+_apt:x:100:65534::/nonexistent:/usr/sbin/nologin
+elf:x:1000:1000::/home/elf:/bin/bash
+alabaster_snowball:x:1001:1001::/home/alabaster_snowball:/bin/nsh
+```
+
+We notice that alabaster_snowball is running the strange shell `/bin/nsh`
+if we look at this shell we see its permissions and notice that we should be able to overwrite it.
+However, if we actually try, we get a permission denied
+
+```
+elf@1fd924a3fa2c:~$ ls -la /bin/nsh
+-rwxrwxrwx 1 root root 75680 Dec 11 17:40 /bin/nsh
+elf@1fd924a3fa2c:~$ echo '' > /bin/nsh
+-bash: /bin/nsh: Operation not permitted
+```
+Looking at `sudo -l` we see that we are only allowed to run one specific command as root:
+```
+elf@1fd924a3fa2c:~$ sudo -l
+Matching Defaults entries for elf on 1fd924a3fa2c:
+    env_reset, mail_badpass, secure_path=/usr/local/sbin\:/usr/local/bin\:/usr/sbin\:/usr/bin\:/sbin\:/bin
+
+User elf may run the following commands on 1fd924a3fa2c:
+    (root) NOPASSWD: /usr/bin/chattr
+```
+So we can run chattr
+The chattr command is used to change file attributes on a Linux file system.
+Lets have a look at the current attributes for /bin/nsh
+
+```
+elf@1fd924a3fa2c:~$ lsattr /bin/nsh
+----i---------e---- /bin/nsh
+```
+
+We see that the immutable flag is set. That is why we cannot overwrite the file.
+We can however use the chattr command to remove this flag ourself.
+
+```
+elf@1fd924a3fa2c:~$ sudo /usr/bin/chattr -i /bin/nsh
+elf@1fd924a3fa2c:~$ lsattr /bin/nsh
+--------------e---- /bin/nsh
+```
+
+Indeed, now we can overwrite the shell. So we just overwrite it with the real bash shell and we are ready.
+We then just `su` to alabaster_snowball with the provided credentials and we are done.
+
+```
+elf@1fd924a3fa2c:~$ cp /bin/bash /bin/nsh
+elf@1fd924a3fa2c:~$ su alabaster_snowball
+Password:
+Loading, please wait......
+
+
+You did it! Congratulations!
+```
+
+That's all there is to this challenge!
 
 -----------------------------
 ### Mongo Pilfer
