@@ -1253,16 +1253,16 @@ Pepper Minstix
 > In certain circumstances though, you need custom tamper scripts to get things going!
 
 
-Challenge-url:
+Challenge-url:  
 https://incident.elfu.org/
 
 
-Other Links:
+Other Links:  
 https://graylog.elfu.org/
 https://report.elfu.org/
 
 
-Location:
+Location:  
 Dorm
 
 
@@ -1275,17 +1275,39 @@ We are provided with 10 different challenges that we need to solve.
 
 ##### Challenge 1
 Objective:
-The malicious file downloaded and executed by Minty gave the attacker remote access to his machine.
-What was the ip:port the malicious file connected to first?
+> Minty CandyCane reported some weird activity on his computer after he clicked on a link in Firefox for a cookie recipe and downloaded a file.
+> What is the full-path + filename of the first malicious file downloaded by Minty?
 
 Solution:
 > C:\Users\minty\Downloads\cookie_recipe.exe
 
-Search:
-`TargetFilename:/.+cookie.+/`
+Search:  
+We can simply search the logs for a filename containing the word cookie.
+```
+TargetFilename:/.+cookie.+/
+```
 
 
 ##### Challenge 2
+Objective:
+The malicious file downloaded and executed by Minty gave the attacker remote access to his machine.
+What was the ip:port the malicious file connected to first?
+
+Solution:
+> 192.168.247.175:4444
+
+Search:  
+```
+CommandLine:/.+cookie_recipe.exe/
+```
+Now find the execution of the .exe and search for events in a scope of 1 minute around that event
+We then also quickly find the network connection  
+Alternatively, we can look for
+```
+ProcessImage:/.+cookie_recipe.exe/
+```
+And find the EventId of 3 (network traffic)
+
 ##### Challenge 3
 ##### Challenge 4
 ##### Challenge 5
@@ -1307,7 +1329,7 @@ todo
 -----------------------------
 ## Objectives
 Clearing out the terminals has given us all the possible hints we could need for doing the objectives.
-The objectives are narative based challenges for this game, they will progress us throught the Kringlecon 2 story and help us save the holiday period.
+The objectives are narative based challenges for this game, they will progress us through the Kringlecon 2 story and help us save the holiday cheer.
 Lets get started!
 
 ### Talk to Santa in the Quad
