@@ -1140,15 +1140,24 @@ When we start we get to select our difficulty. The difficulty refers to how hard
 The game can be properly played, but the goal is ofcourse to win it by cheating.
 
 
-Here are some screenshots to give you an idea of what this is all about
+Here are some screenshots to give you an idea of what this is all about.
+
+
 First we can select our difficulty:
+
 ![Trail Select Game](images/trail_select_game.png)
+
 Then we always start at the following shop screen, there are some interesting things you can do here, but all challenges can be solved without really interacting with this screen. So we just always accept the default values and continue.
+
 ![Trail Shop](images/trail_shop.png)
+
 This is what the game itself looks like. Note the 'URL-bar' to simulate a real browser game.
 The goal is to cover the distance of 8000 without losing all your characters. Pressing 'Go' will increase your distance travelled and trigger all kinds of events.
+
 ![Trail Easy](images/trail_easy.png)
+
 If you manage to complete the game, the result looks like this:
+
 ![Trail Solved](images/trail_solved.png)
 
 #### Solution
@@ -1162,15 +1171,18 @@ We immediately notice the 'distance' parameter in the url bar. We try to update 
 The game screen updates to this:
 
 ![Trail Easy Solution](images/trail_easy_solution.png)
+
 Great! We kept all our guys alive and we only need to travel a distance of 1 now. We simply press 'Go' once and we have completed the first challenge!
 
 ##### Medium mode
 We load into the medium difficulty version of the game and notice one huge difference, the parameters are no longer in the URL!
+
 ![Trail Medium](images/trail_medium.png)
 
 This time, they are being passed as POST parameters. We could easily intercept the requests with burp and modify them how we want, but lets keep it even more simple.
 We can just have a look at the page source and notice that there is a `<div>` element called `statusContainer`. This value contains all the variables that were previously kept in the url bar.
 We update again the value of distance to 7999.
+
 ![Trail Medium Solution](images/trail_medium_solution.png)
 
 We now press 'Go' once and we have completed the Medium challenge!
@@ -1178,19 +1190,24 @@ We now press 'Go' once and we have completed the Medium challenge!
 ##### Hard mode
 This is where things get interesting. This challenge is identical to the medium difficulty, with one key exception.
 The `statusContainer` object this time also contains a hash value. The server sends us this hash value together with all of the other status values.
+
 ![Trail Hard](images/trail_hard.png)
 
 This hash is taken on the server side over all of the other status values. If we update any values and send them back to the server, the server will compare them to the hash we send it.
 If they do not match, the server will reject our request and tell us that we have an issue:
+
 ![Trail Hard Oops](images/trail_hard_oops.png)
 
 While we were originally stuck here for a little while, we decided to throw one of the hashes we received in [crackstation](https://crackstation.net/). To our suprise, the hash was known:
+
 ![Trail Crackstation](images/crackstation.png)
+
 The Hash is just an md5 of the value '1626'! This tells us two important things:
 1. The server is not using a key to secure their hashes
 2. The hashes are of a (very simple) numeric value
 
 After playing around with the game status and the received hashes for a while, we determined that the server was just adding up all the status values and taking a hash of the total. We could have also figured this out by watching the talk [Web Apps: A Trailhead](https://www.youtube.com/watch?v=0T6-DQtzCgM). At a certain point, the server side code for calculating the hash shows up on screen, also showing us how the hash value is being calculated:
+
 ![Trail Talk](images/trail_talk.png)
 
 Our objective is now simple, we update two values:
