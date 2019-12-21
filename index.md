@@ -1454,8 +1454,15 @@ The objectives are narative based challenges for this game, they will progress u
 Lets get started!
 
 ### Talk to Santa in the Quad
-todo
+#### Context
+Objective:
+> Enter the campus quad and talk to Santa.
 
+
+#### Solution
+Just talk to santa. He's right there in the quad!
+
+![Santa Quad](images/santa_quad.png)
 
 -----------------------------
 ### Find the Turtle Doves
