@@ -585,7 +585,7 @@ We are also told that one of those numbers is used twice.
 
 The immediate thing to try would be "1337" (or 'leet'). However this number is not prime. We could solve this challenge by grabbing a list of primes from the internet and removing all entries that have a digit not equal to 1, 3 or 7. We could then remove all entries that do not have a duplicate digit. We can then just write a script to try all the remaining possibilities.
 
-Or you could do what we did, try the first options that came to your mind, one of them being '7331' (the reverse of 1337) and get lucky.
+Or you could do what we did, try the first options that come to your mind, one of them being '7331' (the reverse of 1337) and get lucky.
 ![keypad](images/keypad_code.png)
 
 That's all there is to this challenge, we do however find a little easter egg on the wall inside the dorm after we enter the now unlocked door. It seems the ElfU students need a reminder sometimes and have written the code down on the wall.
@@ -670,7 +670,7 @@ Get a listing (ls) of your current directory.
 #### Solution
 We quickly see that someone has messed with the path.
 
-```
+```bash
 elf@bd2b9636c43a:~$ ls
 This isn't the ls you're looking for
 elf@bd2b9636c43a:~$ which ls
@@ -684,7 +684,7 @@ As a result, linux will search that path first and find the bad `ls` binary and 
 We could now fix the path, or just use the correct binary directly.
 So we just run `/bin/ls` instead.
 
-```
+```bash
 elf@bd2b9636c43a:~$ /bin/ls
 ```
 
