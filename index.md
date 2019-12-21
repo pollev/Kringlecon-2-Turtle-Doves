@@ -758,6 +758,10 @@ password: Password2
 ```
 
 #### Solution
+If we just try to `su` to alabaster_snowball, we see something very unexpected happen:
+![NYAN-NYAN-NYAN](images/nyanshell.png)
+
+
 We look at '/etc/passwd' to see what shell is being loaded for alabaster snowball:
 
 ```
