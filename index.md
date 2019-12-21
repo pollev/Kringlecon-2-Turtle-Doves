@@ -1135,7 +1135,7 @@ Location:
 Dorm
 
 #### Game Overview
-The game is a refernce to legendary game series [Oregon Trail](https://en.wikipedia.org/wiki/The_Oregon_Trail_(series)).
+The game is a reference to legendary game series [Oregon Trail](https://en.wikipedia.org/wiki/The_Oregon_Trail_(series)).
 When we start we get to select our difficulty. The difficulty refers to how hard it is to hack into the game, not just the difficulty of the game itself.
 The game can be properly played, but the goal is ofcourse to win it by cheating.
 
