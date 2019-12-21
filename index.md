@@ -1104,7 +1104,109 @@ NOTE:
 
 -----------------------------
 ### Holiday Hack Trail
-todo
+#### Context
+Initial Dialog:
+Minty Candycane
+> Hi!  I'm Minty Candycane!
+> I just LOVE this old game!
+> I found it on a 5 1/4 floppy in the attic.
+> You should give it a go!
+> If you get stuck at all, check out this year's talks.
+> One is about web application penetration testing.
+> Good luck, and don't get dysentery!
+
+
+Completed Dialog:
+Minty Candycane
+> You made it - congrats!
+> Have you played with the key grinder in my room?  Check it out!
+> It turns out: if you have a good image of a key, you can physically copy it.
+> Maybe you'll see someone hopping around with a key here on campus.
+> _Sometimes you can find it in the Network tab of the browser console._
+> Deviant has a great talk on it at this year's Con.
+> He even has a collection of key bitting templates for common vendors like Kwikset, Schlage, and Yale.
+
+
+Challenge-url:  
+https://trail.elfu.org/gameselect/
+
+
+Location:  
+Dorm
+
+#### Game Overview
+The game is a refernce to legendary game series [Oregon Trail](https://en.wikipedia.org/wiki/The_Oregon_Trail_(series)).
+When we start we get to select our difficulty. The difficulty refers to how hard it is to hack into the game, not just the difficulty of the game itself.
+The game can be properly played, but the goal is ofcourse to win it by cheating.
+
+
+Here are some screenshots to give you an idea of what this is all about
+First we can select our difficulty:
+![Trail Select Game](images/trail_select_game.png)
+Then we always start at the following shop screen, there are some interesting things you can do here, but all challenges can be solved without really interacting with this screen. So we just always accept the default values and continue.
+![Trail Shop](images/trail_shop.png)
+This is what the game itself looks like. Note the 'URL-bar' to simulate a real browser game.
+The goal is to cover the distance of 8000 without losing all your characters. Pressing 'Go' will increase your distance travelled and trigger all kinds of events.
+![Trail Easy](images/trail_easy.png)
+If you manage to complete the game, the result looks like this:
+![Trail Solved](images/trail_solved.png)
+
+#### Solution
+We will go over each of the difficulties, even though only one is required to get the achievement.
+
+##### Easy mode
+We start of course with the easy challenge. We notice from the screenshots above that the URL contains a buch of GET parameters.
+Remember that the goal is to cover the full 8000 distance without losing before that point.
+
+We immediately notice the 'distance' parameter in the url bar. We try to update it to 7999 and press enter.
+The game screen updates to this:
+
+![Trail Easy Solution](images/trail_easy_solution.png)
+Great! We kept all our guys alive and we only need to travel a distance of 1 now. We simply press 'Go' once and we have completed the first challenge!
+
+##### Medium mode
+We load into the medium difficulty version of the game and notice one huge difference, the parameters are no longer in the URL!
+![Trail Medium](images/trail_medium.png)
+
+This time, they are being passed as POST parameters. We could easily intercept the requests with burp and modify them how we want, but lets keep it even more simple.
+We can just have a look at the page source and notice that there is a `<div>` element called `statusContainer`. This value contains all the variables that were previously kept in the url bar.
+We update again the value of distance to 7999.
+![Trail Medium Solution](images/trail_medium_solution.png)
+
+We now press 'Go' once and we have completed the Medium challenge!
+
+##### Hard mode
+This is where things get interesting. This challenge is identical to the medium difficulty, with one key exception.
+The `statusContainer` object this time also contains a hash value. The server sends us this hash value together with all of the other status values.
+![Trail Hard](images/trail_hard.png)
+
+This hash is taken on the server side over all of the other status values. If we update any values and send them back to the server, the server will compare them to the hash we send it.
+If they do not match, the server will reject our request and tell us that we have an issue:
+![Trail Hard Oops](images/trail_hard_oops.png)
+
+While we were originally stuck here for a little while, we decided to throw one of the hashes we received in [crackstation](https://crackstation.net/). To our suprise, the hash was known:
+![Trail Crackstation](images/crackstation.png)
+The Hash is just an md5 of the value '1626'! This tells us two important things:
+1. The server is not using a key to secure their hashes
+2. The hashes are of a (very simple) numeric value
+
+After playing around with the game status and the received hashes for a while, we determined that the server was just adding up all the status values and taking a hash of the total. We could have also figured this out by watching the talk [Web Apps: A Trailhead](https://www.youtube.com/watch?v=0T6-DQtzCgM). At a certain point, the server side code for calculating the hash shows up on screen, also showing us how the hash value is being calculated:
+![Trail Talk](images/trail_talk.png)
+
+Our objective is now simple, we update two values:
+- The distance
+- The hash
+
+Start of with a clean slate (hash of value 1626) and we increase the distance from 0 to 7999. We then generate a hash `md5(1626 + 7999)` and change the hash value to reflect that.
+In linux we can do this easily:
+```
+polle@polle-pc:~ $ echo -n "$((1626 + 7999))" | md5sum
+a330f9fecc388ce67f87b09855480ca3  -
+```
+There we have our new hash value. We update both values in the source code as we did for the medium challenge and we press 'Go' once.
+
+We have completed the hard challenge! That was fun!
+
 
 -----------------------------
 ### Graylog
