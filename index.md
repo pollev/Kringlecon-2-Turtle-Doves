@@ -408,9 +408,9 @@ Terminals:
 
 -----------------------------
 ### Oversight: End-Credits Bypass
-While working on the data gathering script, I realized that I would need to automate the movement from room to room. The script could only pull data for a location after physically moving my character there. So I started working on a 'teleportation' option. The script interacts with the backend directly to move my character from room to room, it then grabs all zone information it finds and stores it.
+While working on the data gathering script, I realized that I would need to automate the movement from room to room. The script could only pull data for a location after physically moving my character there. So I started working on a 'teleportation' option. The script interacts with the backend directly to move my character to each room, it then grabs all zone information it finds and stores it.
 
-That info includes the new exit-portals for that specific zone. That means that, once we enter a zone, we can autoamtically figure out new locations we can go to and the script can then automate going to those new zones as well.
+That info includes the new exit-portals for that specific zone. That means that, once we enter a zone, we can automatically figure out new locations we can go to and the script can then automate going to those new zones as well.
 
 It turns out however that certain zones, which are supposed to only be accessible after completion of an objective, are still accessible if interacting with the websocket in this manner.
 It is the client which refuses to enter these zones. The portals to the zones still exist, and we can force our way in by sending the appropriate command to the server. It seems the devs forgot to do some server side validation here.
@@ -518,7 +518,45 @@ Type 'Q' and enter
 
 -----------------------------
 ### Frosty Keypad
-todo
+#### Context
+Initial Dialog:
+Tangle Coalbox
+> Hey kid, it's me, Tangle Coalbox.
+> I'm sleuthing again, and I could use your help.
+> Ya see, this here number lock's been popped by someone.
+> I think I know who, but it'd sure be great if you could open this up for me.
+> I've got a few clues for you.
+>  1. One digit is repeated once.
+>  2. The code is a prime number.
+>  3. You can probably tell by looking at the keypad which buttons are used.
+
+
+Completed Dialog:
+Tangle Coalbox
+> Yep, that's it. Thanks for the assist, gumshoe.
+> Hey, if you think you can help with another problem, Prof. Banas could use a hand too.
+> Head west to the other side of the quad into Hermey Hall and find him in the Laboratory.
+
+
+Challenge-url:  
+https://keypad.elfu.org?challenge=keypad
+
+
+Location:  
+quad (The Quad)
+
+
+#### Solution
+We have a look at the door keypad and see that the keys "1", "3" and "7" have been used.
+We are also told that one of those numbers is used twice.
+
+The immediate thing to try would be "1337" (or 'leet'). However this number is not prime. We could solve this challenge by grabbing a list of primes from the internet and removing all entries that have a digit not equal to 1, 3 or 7. We could then remove all entries that do not have a duplicate digit. We can then just write a script to try all the remaining possibilities.
+
+Or, what we did is just to try the first options that came to our mind, and we tried '7331' (the reverse of 1337) and got lucky.
+![keypad](images/keypad_code.png)
+
+That's all there is to this challenge, we do however find a little easter egg on the wall inside the dorm after we enter the now unlocked door. It seems the ElfU students need a reminder sometimes and have written the code down on the wall.
+![keypad_egg](images/keypad_egg.png)
 
 -----------------------------
 ### Linux Path
