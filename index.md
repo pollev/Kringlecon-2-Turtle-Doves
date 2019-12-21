@@ -27,7 +27,7 @@ This writeup is split into several sections
    7. [Holiday Hack Trail](#holiday-hack-trail)
    8. [Graylog](#graylog)
    9. [Powershell Laser](#powershell-laser)
-   10. [Sleigh Route Finder](#sleigh-route-finder)
+   10. [Zeek JSON Analysis](#zeek-json-analysis)
 3. [Objectives](#objectives)
    0. [Talk to Santa in the Quad](#talk-to-santa-in-the-quad)
    1. [Find the Turtle Doves](#find-the-turtle-doves)
@@ -1227,14 +1227,80 @@ We have completed the hard challenge! That was fun!
 
 -----------------------------
 ### Graylog
-todo
+#### Context
+Initial Dialog:
+Pepper Minstix
+> It's me - Pepper Minstix.
+> Normally I'm jollier, but this Graylog has me a bit mystified.
+> Have you used Graylog before? It is a log management system based on Elasticsearch, MongoDB, and Scala.
+> Some Elf U computers were hacked, and I've been tasked with performing incident response.
+> Can you help me fill out the incident response report using our instance of Graylog?
+> It's probably helpful if you know a few things about Graylog.
+> Event IDs and Sysmon are important too.  Have you spent time with those?
+> Don't worry - I'm sure you can figure this all out for me!
+> Click on the _All messages_ Link to access the Graylog search interface!
+> Make sure you are searching _in all messages_!
+> The Elf U Graylog server has an integrated incident response reporting system. Just mouse-over the box in the lower-right corner.
+> Login with the username `elfustudent` and password `elfustudent`.
+
+Completed Dialog:
+Pepper Minstix
+> That's it - hooray!
+> Have you had any luck retrieving scraps of paper from the Elf U server?
+> You might want to look into SQL injection techniques.
+> OWASP is always a good resource for web attacks.
+> For blind SQLi, I've heard Sqlmap is a great tool.
+> In certain circumstances though, you need custom tamper scripts to get things going!
+
+
+Challenge-url:
+https://incident.elfu.org/
+
+
+Other Links:
+https://graylog.elfu.org/
+https://report.elfu.org/
+
+
+Location:
+Dorm
+
+
+#### Solution
+Upon logging in with the provided credentials, we end up on the search interface for graylog.
+
+![Graylog](images/graylog_main.png)
+
+We are provided with 10 different challenges that we need to solve.
+
+##### Challenge 1
+Objective:
+The malicious file downloaded and executed by Minty gave the attacker remote access to his machine.
+What was the ip:port the malicious file connected to first?
+
+Solution:
+> C:\Users\minty\Downloads\cookie_recipe.exe
+
+Search:
+`TargetFilename:/.+cookie.+/`
+
+
+##### Challenge 2
+##### Challenge 3
+##### Challenge 4
+##### Challenge 5
+##### Challenge 6
+##### Challenge 7
+##### Challenge 8
+##### Challenge 9
+##### Challenge 10
 
 -----------------------------
 ### Powershell Laser
 todo
 
 -----------------------------
-### Sleigh Route Finder
+### Zeek JSON Analysis
 todo
 
 
