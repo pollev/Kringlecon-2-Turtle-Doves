@@ -808,9 +808,9 @@ Matching Defaults entries for elf on 1fd924a3fa2c:
 User elf may run the following commands on 1fd924a3fa2c:
     (root) NOPASSWD: /usr/bin/chattr
 ```
-So we can run chattr
-The chattr command is used to change file attributes on a Linux file system.
-Lets have a look at the current attributes for /bin/nsh
+So we can run `chattr`
+The `chattr` command is used to change file attributes on a Linux file system.
+Lets have a look at the current attributes for `/bin/nsh`
 
 ```
 elf@1fd924a3fa2c:~$ lsattr /bin/nsh
@@ -818,7 +818,7 @@ elf@1fd924a3fa2c:~$ lsattr /bin/nsh
 ```
 
 We see that the immutable flag is set. That is why we cannot overwrite the file.
-We can however use the chattr command to remove this flag ourself.
+We can however use the `chattr` command to remove this flag ourself.
 
 ```
 elf@1fd924a3fa2c:~$ sudo /usr/bin/chattr -i /bin/nsh
