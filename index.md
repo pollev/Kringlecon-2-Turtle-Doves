@@ -1436,6 +1436,8 @@ Alternatively, select the poweshell command and view events in a 5 seconds windo
 
 That is all for the graylog terminal!
 
+![Graylog Completed](images/graylog_completed.png)
+
 -----------------------------
 ### Powershell Laser
 todo
