@@ -2126,6 +2126,8 @@ The real difficulty of this challenge was honestly installing RITA in the first 
 Once that was done, getting the objective was relatively straightforward.
 For anyone attempting this at home, just spin up a new ubuntu vm. Don't try to do this on Kali. You will waste a ton of time.
 
+Following our own advice, we start by installing RITA on Ubuntu:
+
 ```
 root@ubuntu-tmp:/home/polle/zeek# wget https://github.com/activecm/rita/releases/download/v3.1.1/install.sh
 root@ubuntu-tmp:/home/polle/zeek# chmod +x install.sh
