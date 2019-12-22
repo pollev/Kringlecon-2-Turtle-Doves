@@ -1562,7 +1562,7 @@ PS /home/elf> Get-History
   Id CommandLine
   -- -----------
    1 Get-Help -Name Get-Process
-   2 Get-Help -Name Get-\*
+   2 Get-Help -Name Get-*
    3 Set-ExecutionPolicy Unrestricted
    4 Get-Service | ConvertTo-HTML -Property Name, Status > C:\services.htm
    5 Get-Service | Export-CSV c:\service.csv
@@ -1577,10 +1577,11 @@ We immediately notice the value for the angle (`angle?val=65.5`). We cannot be s
 
 We also get another clue:
 > I have many name=value variables that I share to applications system wide. At a command I will reveal my secrets once you Get my Child Items.
+
 This is referring to name-value pairs system wide. We should have a look at the environment variables
 
 ```
-PS /home/elf> gci Env:\* | Select-Object Value
+PS /home/elf> gci Env:* | Select-Object Value
 
 Value
 -----
@@ -1756,7 +1757,7 @@ Still no additional settings, but more instructions to follow!
 We need to list all the event id's in the file, count them, sort them and figure out which event only appears once:
 
 ```
-PS /tmp/out/refraction> gci -R /etc -include \*.xml -ErrorAction 'SilentlyContinue'
+PS /tmp/out/refraction> gci -R /etc -include *.xml -ErrorAction 'SilentlyContinue'
 
 
     Directory: /etc/systemd/system/timers.target.wants
