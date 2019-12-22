@@ -1935,14 +1935,6 @@ Objective
 > Bushy Evergreen is hanging out in the train station and may be able to help you out.
 
 
-Event data log:  
-https://downloads.elfu.org/Security.evtx.zip
-
-
-DeepBlueCLI tool:  
-https://github.com/sans-blue-team/DeepBlueCLI
-
-
 Hint:
 Bushy Evergreen
 > Wow, that was much easier than I'd thought.
@@ -1952,6 +1944,14 @@ Bushy Evergreen
 > You can check it out on GitHub.
 > It was written by that Eric Conrad.
 > He lives in Maine - not too far from here!
+
+
+Event data log:  
+https://downloads.elfu.org/Security.evtx.zip
+
+
+DeepBlueCLI tool:  
+https://github.com/sans-blue-team/DeepBlueCLI
 
 
 #### Solution
@@ -1992,14 +1992,6 @@ Objective
 > For hints on achieving this objective, please visit Hermey Hall and talk with SugarPlum Mary.
 
 
-Sysmon logs:  
-https://downloads.elfu.org/sysmon-data.json.zip
-
-
-Josh Wright blog post:  
-https://pen-testing.sans.org/blog/2019/12/10/eql-threat-hunting/
-
-
 Hint:
 SugarPlum Mary
 > Oh there they are!  Now I can delete them.  Thanks!
@@ -2007,6 +1999,14 @@ SugarPlum Mary
 > If you aren't familiar with Sysmon, Carlos Perez has some great info about it.
 > Haven't heard of the Event Query Language?
 > Check out some of [Ross Wolf](https://www.endgame.com/our-experts/ross-wolf)'s work on EQL or that blog post by Josh Wright in your badge.
+
+
+Sysmon logs:  
+https://downloads.elfu.org/sysmon-data.json.zip
+
+
+Josh Wright blog post:  
+https://pen-testing.sans.org/blog/2019/12/10/eql-threat-hunting/
 
 
 #### Solution
@@ -2105,20 +2105,20 @@ Objective
 > For hints on achieving this objective, please visit the Laboratory and talk with Sparkle Redberry.
 
 
-Zeek logs:  
-https://downloads.elfu.org/elfu-zeeklogs.zip
-
-
-Rita in this case refers to:  
-https://github.com/activecm/rita
-
-
 Hint:
 Sparkle Redberry
 > You got it - three cheers for cheer!
 > For objective 5, have you taken a look at our Zeek logs?
 > Something's gone wrong.  But I hear someone named Rita can help us.
 > Can you and she figure out what happened?
+
+
+Zeek logs:  
+https://downloads.elfu.org/elfu-zeeklogs.zip
+
+
+Rita in this case refers to:  
+https://github.com/activecm/rita
 
 
 #### Solution
