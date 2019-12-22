@@ -2094,7 +2094,7 @@ We find that the ntdsutil tool was used to dump the credentials.
 
 
 #### Code
-ntdsutil
+The challenge code is `ntdsutil`
 
 
 -----------------------------
