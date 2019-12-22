@@ -1926,55 +1926,279 @@ Sincerely,
 The challenge code is `DEMAND`
 
 
-
 -----------------------------
 ### Windows Log Analysis: Evaluate Attack Outcome
-todo
+#### Context
+Objective
+> We're seeing attacks against the Elf U domain!
+> Using the event log data, identify the user account that the attacker compromised using a password spray attack.
+> Bushy Evergreen is hanging out in the train station and may be able to help you out.
+
+
+Event data log:  
+https://downloads.elfu.org/Security.evtx.zip
+
+
+DeepBlueCLI tool:  
+https://github.com/sans-blue-team/DeepBlueCLI
+
+
+Hint:
+Bushy Evergreen
+> Wow, that was much easier than I'd thought.
+> Maybe I don't need a clunky GUI after all!
+> Have you taken a look at the password spray attack artifacts?
+> I'll bet that DeepBlueCLI tool is helpful.
+> You can check it out on GitHub.
+> It was written by that Eric Conrad.
+> He lives in Maine - not too far from here!
+
+
+#### Solution
+##### Manual Solution
+We can find it pretty easily by looking at the windows event logs manually.
+1. We filter for eventid 4625 and 4624 (login failed and login success).
+2. Sort by date and time.
+3. Find 4624. That's it.
+
+#### DeepBlueCLI solution
+We can run the tool as follows:
+
+```
+C:\Users\cmdo\Desktop\test\DeepBlueCLI > .\DeepBlue.ps1 ..\Security.evtx
+```
+
+This will output a significant amount of data and show us that there has been a password spay attempt for the following usernames:
+```
+Target Usernames: ygoldentrifle esparklesleigh hevergreen Administrator sgreenbells cjinglebuns
+          tcandybaubles bbrandyleaves bevergreen lstripyleaves gchocolatewine ltrufflefig wopenslae mstripysleigh
+          pbrandyberry civysparkles sscarletpie ftwinklestockings cstripyfluff gcandyfluff smullingfluff hcandysnaps
+          mbrandybells twinterfig supatree civypears ygreenpie ftinseltoes smary ttinselbubbles dsparkleleaves
+```
+All of them taking place on 19/11/2019 around 13:22.
+We can then just open the event log and find a successful login (4624) around this time.
+
+We determine that user `supatree` has been compromised
+
+#### Code
+The challenge code is `supatree`
 
 
 -----------------------------
 ### Windows Log Analysis: Determine Attacker Technique
-todo
+#### Context
+Objective
+> Using these normalized Sysmon logs, identify the tool the attacker used to retrieve domain password hashes from the lsass.exe process.
+> For hints on achieving this objective, please visit Hermey Hall and talk with SugarPlum Mary.
+
+
+Sysmon logs:  
+https://downloads.elfu.org/sysmon-data.json.zip
+
+
+Josh Wright blog post:  
+https://pen-testing.sans.org/blog/2019/12/10/eql-threat-hunting/
+
+
+Hint:
+SugarPlum Mary
+> Oh there they are!  Now I can delete them.  Thanks!
+> Have you tried the Sysmon and EQL challenge?
+> If you aren't familiar with Sysmon, Carlos Perez has some great info about it.
+> Haven't heard of the Event Query Language?
+> Check out some of [Ross Wolf](https://www.endgame.com/our-experts/ross-wolf)'s work on EQL or that blog post by Josh Wright in your badge.
+
+
+#### Solution
+We can use EQL to search the json data.
+We search for lsass processes:
+
+```
+root@pv-kali:~/Desktop/logs# eql query -f sysmon-data.json "process where command_line = '*lsass*'" | jq
+root@pv-kali:~/Desktop/logs# eql query -f sysmon-data.json "process where process_name = '*lsass*'" | jq
+root@pv-kali:~/Desktop/logs# eql query -f sysmon-data.json "process where parent_process_name = '*lsass*'" | jq
+{
+  "command_line": "C:\\Windows\\system32\\cmd.exe",
+  "event_type": "process",
+  "logon_id": 999,
+  "parent_process_name": "lsass.exe",
+  "parent_process_path": "C:\\Windows\\System32\\lsass.exe",
+  "pid": 3440,
+  "ppid": 632,
+  "process_name": "cmd.exe",
+  "process_path": "C:\\Windows\\System32\\cmd.exe",
+  "subtype": "create",
+  "timestamp": 132186398356220000,
+  "unique_pid": "{7431d376-dedb-5dd3-0000-001027be4f00}",
+  "unique_ppid": "{7431d376-cd7f-5dd3-0000-001013920000}",
+  "user": "NT AUTHORITY\\SYSTEM",
+  "user_domain": "NT AUTHORITY",
+  "user_name": "SYSTEM"
+}
+```
+
+We see only one time that lsass.exe has been run.
+We can now search for the user (999) and limit the time to a few seconds around this event.
+
+
+The found timestamp converts to:  
+`GMT: Tuesday, November 19, 2019 12:23:55 PM`
+
+
+We will search from
+`GMT: Tuesday, November 19, 2019 12:23:50 PM (132186398300000000)`
+to
+`GMT: Tuesday, November 19, 2019 12:25:00 PM (132186399000000000)`
+
+```
+root@pv-kali:~/Desktop/logs# eql query -f sysmon-data.json "process where logon_id = 999 and timestamp > 132186398300000000 and timestamp < 132186399000000000" | jq
+{
+  "command_line": "C:\\Windows\\system32\\cmd.exe",
+  "event_type": "process",
+  "logon_id": 999,
+  "parent_process_name": "lsass.exe",
+  "parent_process_path": "C:\\Windows\\System32\\lsass.exe",
+  "pid": 3440,
+  "ppid": 632,
+  "process_name": "cmd.exe",
+  "process_path": "C:\\Windows\\System32\\cmd.exe",
+  "subtype": "create",
+  "timestamp": 132186398356220000,
+  "unique_pid": "{7431d376-dedb-5dd3-0000-001027be4f00}",
+  "unique_ppid": "{7431d376-cd7f-5dd3-0000-001013920000}",
+  "user": "NT AUTHORITY\\SYSTEM",
+  "user_domain": "NT AUTHORITY",
+  "user_name": "SYSTEM"
+}
+{
+  "command_line": "ntdsutil.exe  \"ac i ntds\" ifm \"create full c:\\hive\" q q",
+  "event_type": "process",
+  "logon_id": 999,
+  "parent_process_name": "cmd.exe",
+  "parent_process_path": "C:\\Windows\\System32\\cmd.exe",
+  "pid": 3556,
+  "ppid": 3440,
+  "process_name": "ntdsutil.exe",
+  "process_path": "C:\\Windows\\System32\\ntdsutil.exe",
+  "subtype": "create",
+  "timestamp": 132186398470300000,
+  "unique_pid": "{7431d376-dee7-5dd3-0000-0010f0c44f00}",
+  "unique_ppid": "{7431d376-dedb-5dd3-0000-001027be4f00}",
+  "user": "NT AUTHORITY\\SYSTEM",
+  "user_domain": "NT AUTHORITY",
+  "user_name": "SYSTEM"
+}
+```
+
+We find that the ntdsutil tool was used to dump the credentials.
+
+
+#### Code
+ntdsutil
 
 
 -----------------------------
 ### Network Log Analysis: Determine Compromised System
-todo
+#### Context
+Objective
+>
+
+#### Solution
+
+#### Code
+
+
 
 
 -----------------------------
 ### Splunk
-todo
+#### Context
+Objective
+>
+
+#### Solution
+
+#### Code
+
+
 
 
 -----------------------------
 ### Get Access To The Steam Tunnels
-todo
+#### Context
+Objective
+>
+
+#### Solution
+
+#### Code
+
+
 
 
 -----------------------------
 ### Bypassing the Frido Sleigh CAPTEHA
-todo
+#### Context
+Objective
+>
+
+#### Solution
+
+#### Code
+
+
 
 
 -----------------------------
 ### Retrieve Scraps of Paper from Server
-todo
+#### Context
+Objective
+>
+
+#### Solution
+
+#### Code
+
+
 
 
 -----------------------------
 ### Recover Cleartext Document
-todo
+#### Context
+Objective
+>
+
+#### Solution
+
+#### Code
+
+
 
 
 -----------------------------
 ### Open the Sleigh Shop Door
-todo
+#### Context
+Objective
+>
+
+#### Solution
+
+#### Code
+
+
 
 
 -----------------------------
 ### Filter Out Poisoned Sources of Weather Data
-todo
+#### Context
+Objective
+>
+
+#### Solution
+
+#### Code
+
+
 
 
 -----------------------------
