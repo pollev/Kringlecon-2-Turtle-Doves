@@ -1806,7 +1806,9 @@ Xe=10`n    F=20`n    Kr=8`n    Rn=9`n}`n"</S>
 ```
 
 We find here the post body for the correct gases.
-`$correct_gases_postbody = @{`n    O=6`n    H=7`n    He=3`n    N=4`n    Ne=22`n    Ar=11`n    Xe=10`n    F=20`n    Kr=8`n    Rn=9`n}`
+```
+$correct_gases_postbody = @{`n    O=6`n    H=7`n    He=3`n    N=4`n    Ne=22`n    Ar=11`n    Xe=10`n    F=20`n    Kr=8`n    Rn=9`n}
+```
 
 
 Final Values:
