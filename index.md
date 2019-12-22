@@ -2254,6 +2254,7 @@ The actual splunk interface can be accessed by clicking on the 'search' tab. The
 We are given several challenges to complete using the search engine. Each new challenge is unlocked after completing the previous one.
 Doing all the challenges is not required, you only need to complete the main challenge, which is:
 > What was the message for Kent that the adversary embedded in this attack?
+
 However we will go over all the challenges here and conclude with the main challenge. Lets get started!
 
 
