@@ -1613,11 +1613,6 @@ We see a new hint for us to follow:
 > Expand me from my prison and I will show you the way.
 > Recurse through all /etc and Sort on my LastWriteTime to reveal im the newest of all.
 
-NOTE:
-> We also notice this strange string `a6e1be0d-4ded-4727-9160-d5a2cdb0fbdf` moments later followed by `5ff2894c232d`. This only caught our eye while creating this writeup.
-> It seems random but it actually resembled the indentifiers and keys used for the [Recover Cleartext Document](#recover-cleartext-document) objective.
-> We tried using the identifier to extract a key from the server backend, but there does not seem to be a match. And since we have no encrypted document to decrypt we have no use for the key either.
-> We might have missed something, but this seems to be an easter egg of some kind. If anyone figured out if there was something behind this please let me know.
 
 We search for the archive and find it quickly.
 We then extract it and find two things inside:
