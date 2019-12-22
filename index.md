@@ -2221,13 +2221,98 @@ The challenge code is `192.168.134.130`
 ### Splunk
 #### Context
 Objective
->
+> Access https://splunk.elfu.org/ as elf with password elfsocks.
+> What was the message for Kent that the adversary embedded in this attack? The SOC folks at that link will help you along!
+> For hints on achieving this objective, please visit the Laboratory in Hermey Hall and talk with Prof. Banas.
+
+
+Url:  
+https://splunk.elfu.org/
+
+
+Hint:
+Professor Banas
+> Hi, I'm Dr. Banas, professor of Cheerology at Elf University.
+> This term, I'm teaching HOL 404: The Search for Holiday Cheer in Popular Culture, and I've had quite a shock!
+> I was at home enjoying a nice cup of Gløgg when I had a call from Kent, one of my students who interns at the Elf U SOC.
+> Kent said that my computer has been _hacking_ other computers on campus and that I needed to fix it ASAP!
+> If I don't, he will have to report the incident to the boss of the SOC.
+> Apparently, I can find out more information from this website [https://splunk.elfu.org/](https://splunk.elfu.org/) with the username: `elf` / Password: `elfsocks`.
+> I don't know anything about computer security.  Can you please help me?
+
 
 #### Solution
+Upon logging in with the provided credentials, we end up on a sort of chat interface for the ElfU SOC.
+Here we get to talk with some of the Elves who will give us tips to complete the objectives.
+
+![Splunk Chat](images/splunk_soc_chat.png)
+
+The actual splunk interface can be accessed by clicking on the 'search' tab. There is also a 'File Archive' tab that contains files related to events captured by splunk.
+
+![Splunk Search](images/splunk_search.png)
+
+We are given several challenges to complete using the search engine. Each new challenge is unlocked after completing the previous one.
+Doing all the challenges is not required, you only need to complete the main challenge, which is:
+> What was the message for Kent that the adversary embedded in this attack?
+However we will go over all the challenges here and conclude with the main challenge. Lets get started!
+
+
+##### Challenge 1
+Objective:
+> What is the short host name of Professor Banas' computer?
+
+Solution:
+> sweetums
+
+Search:  
+We start by just reading all the chats. We find the name of the host in the chat with '#ELFU SOC'
+They say:
+> Yep. And we have some system called 'sweetums' here on campus communicating with the same weird IP'
+
+
+##### Challenge 2
+Objective:
+> What is the name of the sensitive file that was likely accessed and copied by the attacker?
+> Please provide the fully qualified location of the file. (Example: C:\temp\report.pdf)
+
+Solution:
+> C:\Users\cbanas\Documents\Naughty_and_Nice_2019_draft.txt
+
+Search:  
+We get taught how to search for anything related to the user cbanas (`index=main cbanas`) and told to search instead for santa.
+We search for:
+```
+index=main santa
+```
+We find that the very first result contains:
+```
+ParameterBinding(Format-List): name="InputObject"; value="C:\Users\cbanas\Documents\Naughty_and_Nice_2019_draft.txt:1:Carl, you know there's no one I trust more than you to help.  Can you have a look at t
+his draft Naughty and Nice list for 2019 and let me know your thoughts? -Santa"
+```
+
+
+##### Challenge 3
+Objective:
+> What is the fully-qualified domain name(FQDN) of the command and control(C2) server? (Example: badguy.baddies.com)
+
+Solution:
+> 144.202.46.214.vultr.com
+
+Search:  
+We get told how to search sysmon logs, they also tell us to search for eventcode 3 (network) and for powershell:
+```
+index=main sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational powershell EventCode=3
+```
+We quickly find network connections to '144.202.46.214.vultr.com'
+We can also just look at the 'interesting field' `DestinationHostame` at the left hand side of the interface
+
+![Splunk Interesting Fields](images/splunk_interesting_fields.png)
+
+
+
 
 #### Code
-
-
+The challenge code is `Kent you are so unfair. And we were going to make you the king of the Winter Carnival.`
 
 
 -----------------------------
