@@ -2226,10 +2226,6 @@ Objective
 > For hints on achieving this objective, please visit the Laboratory in Hermey Hall and talk with Prof. Banas.
 
 
-Url:  
-https://splunk.elfu.org/
-
-
 Hint:
 Professor Banas
 > Hi, I'm Dr. Banas, professor of Cheerology at Elf University.
@@ -2239,6 +2235,10 @@ Professor Banas
 > If I don't, he will have to report the incident to the boss of the SOC.
 > Apparently, I can find out more information from this website [https://splunk.elfu.org/](https://splunk.elfu.org/) with the username: `elf` / Password: `elfsocks`.
 > I don't know anything about computer security.  Can you please help me?
+
+
+Url:  
+https://splunk.elfu.org/
 
 
 #### Solution
