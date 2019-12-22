@@ -2101,13 +2101,118 @@ The challenge code is `ntdsutil`
 ### Network Log Analysis: Determine Compromised System
 #### Context
 Objective
->
+> The attacks don't stop! Can you help identify the IP address of the malware-infected system using these Zeek logs?
+> For hints on achieving this objective, please visit the Laboratory and talk with Sparkle Redberry.
+
+
+Zeek logs:  
+https://downloads.elfu.org/elfu-zeeklogs.zip
+
+
+Rita in this case refers to:  
+https://github.com/activecm/rita
+
+
+Hint:
+Sparkle Redberry
+> You got it - three cheers for cheer!
+> For objective 5, have you taken a look at our Zeek logs?
+> Something's gone wrong.  But I hear someone named Rita can help us.
+> Can you and she figure out what happened?
+
 
 #### Solution
+The real difficulty of this challenge was honestly installing RITA in the first place.
+Once that was done, getting the objective was relatively straightforward.
+For anyone attempting this at home, just spin up a new ubuntu vm. Don't try to do this on Kali. You will waste a ton of time.
+
+```
+root@ubuntu-tmp:/home/polle/zeek# wget https://github.com/activecm/rita/releases/download/v3.1.1/install.sh
+root@ubuntu-tmp:/home/polle/zeek# chmod +x install.sh
+root@ubuntu-tmp:/home/polle/zeek# ./install.sh --disable-bro
+
+ _ \ _ _| __ __|  \
+   /   |     |   _ \
+_|_\ ___|   _| _/  _\  v3.1.1
+
+Brought to you by Active CounterMeasures
+
+[-] In order to run the installer, several basic packages must be installed.
+        [-] Updating packages... SUCCESS
+        [-] Ensuring curl is installed... SUCCESS
+        [-] Ensuring coreutils is installed... SUCCESS
+        [-] Ensuring lsb-release is installed... SUCCESS
+        [-] Ensuring yum-utils is installed... SUCCESS
+[-] This installer will:
+        [-] Install MongoDB
+        [-] Install RITA to /usr/local/bin/rita
+        [-] Create a runtime directory for RITA in /var/lib/rita
+        [-] Create a configuration directory for RITA in /etc/rita
+[-] Installing MongoDB... SUCCESS
+[!] Starting MongoDB and enabling on startup.
+Created symlink /etc/systemd/system/multi-user.target.wants/mongod.service → /lib/systemd/system/mongod.service.
+[!] Starting MongoDB process completed.
+[!] You can access the MongoDB shell with 'mongo'.
+[!] If you need to stop MongoDB,
+[!] run 'sudo systemctl stop mongod'.
+[-] Installing RITA... SUCCESS
+[!] To finish the installation, reload the system profile with
+[!] 'source /etc/profile'.
+
+ _ \ _ _| __ __|  \
+   /   |     |   _ \
+_|_\ ___|   _| _/  _\  v3.1.1
+
+Brought to you by Active CounterMeasures
+
+Thank you for installing RITA! Happy hunting!
+```
+
+Great, that worked smoothly on Ubuntu! Now lets import our log files into RITA.
+
+```
+root@ubuntu-tmp:/home/polle/zeek# rita import elfu-zeeklogs holidayhack
+
+        [+] Importing [elfu-zeeklogs]:
+        [-] Verifying log files have not been previously parsed into the target dataset ...
+        [-] Parsing logs to: holidayhack ...
+        [-] Parsing elfu-zeeklogs/conn.log-00001_20190823120021.log -> holidayhack
+        [-] Parsing elfu-zeeklogs/conn.log-00002_20190823121227.log -> holidayhack
+<< REDACTED FOR BREVITY >>
+        [-] Parsing elfu-zeeklogs/ssl.log-00095_20190824090519.log -> holidayhack
+        [-] Parsing elfu-zeeklogs/ssl.log-00096_20190824091651.log -> holidayhack
+        [-] Host Analysis:            41993 / 41993  [==================] 100 %
+        [-] Uconn Analysis:           115915 / 115915  [==================] 100 %
+        [-] Exploded DNS Analysis:    47836 / 47836  [==================] 100 %
+        [-] Hostname Analysis:        47836 / 47836  [==================] 100 %
+        [-] Beacon Analysis:          115915 / 115915  [==================] 100 %
+        [-] UserAgent Analysis:       6 / 6  [==================] 100 %
+        [!] No certificate data to analyze
+        [-] Updating blacklisted peers ...
+        [-] Indexing log entries ...
+        [-] Updating metadatabase ...
+        [-] Done!
+```
+
+We give it the dataset name 'holidayhack'. We wait till rita finishes parsing the logs.
+Once that is done we can analyse them. We search for the beacons to try and find the infected machine.
+
+```
+root@ubuntu-tmp:/home/polle/zeek# rita show-beacons holidayhack -H | less -S
++-------+-----------------+-----------------+-------------+-------------+-----------
+| SCORE |    SOURCE IP    | DESTINATION IP  | CONNECTIONS | AVG  BYTES  | INTVL RANG
++-------+-----------------+-----------------+-------------+-------------+-----------
+| 0.998 | 192.168.134.130 | 144.202.46.214  |        7660 |        1156 |          1
+| 0.847 | 192.168.134.131 | 150.254.186.145 |         684 |       13737 |        874
+<< OUTPUT REDACTED FOR BREVITY >>
+
+```
+
+We find the first IP with a score of almost 1. The source IP is our flag
+
 
 #### Code
-
-
+The challenge code is `192.168.134.130`
 
 
 -----------------------------
