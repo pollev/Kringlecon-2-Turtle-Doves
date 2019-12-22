@@ -1440,7 +1440,411 @@ That is all for the graylog terminal!
 
 -----------------------------
 ### Powershell Laser
-todo
+#### Context
+Initial Dialog:
+Sparkle Redberry
+> I'm Sparkle Redberry and Imma chargin' my laser!
+> Problem is: the settings are off.
+> Do you know any PowerShell?
+> It'd be GREAT if you could hop in and recalibrate this thing.
+> It spreads holiday cheer across the Earth ...
+> ...  when it's working!
+
+Completed Dialog:
+Sparkle Redberry
+> You got it - three cheers for cheer!
+> For objective 5, have you taken a look at our Zeek logs?
+> Something's gone wrong.  But I hear someone named Rita can help us.
+> Can you and she figure out what happened?
+
+
+Challenge-url:  
+https://docker2019.kringlecon.com/?challenge=powershell
+
+Location:  
+The Laboratory
+
+
+#### MOTD
+```
+🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲
+🗲                                                                                🗲
+🗲 Elf University Student Research Terminal - Christmas Cheer Laser Project       🗲
+🗲 ------------------------------------------------------------------------------ 🗲
+🗲 The research department at Elf University is currently working on a top-secret 🗲
+🗲 Laser which shoots laser beams of Christmas cheer at a range of hundreds of    🗲
+🗲 miles. The student research team was successfully able to tweak the laser to   🗲
+🗲 JUST the right settings to achieve 5 Mega-Jollies per liter of laser output.   🗲
+🗲 Unfortunately, someone broke into the research terminal, changed the laser     🗲
+🗲 settings through the Web API and left a note behind at /home/callingcard.txt.  🗲
+🗲 Read the calling card and follow the clues to find the correct laser Settings. 🗲
+🗲 Apply these correct settings to the laser using it's Web API to achieve laser  🗲
+🗲 output of 5 Mega-Jollies per liter.                                            🗲
+🗲                                                                                🗲
+🗲 Use (Invoke-WebRequest -Uri http://localhost:1225/).RawContent for more info.  🗲
+🗲                                                                                🗲
+🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲🗲
+```
+
+
+#### Solution
+As the MOTD tells us, we have a look at the callingcard.
+
+```
+PS /home/elf> type /home/callingcard.txt
+What's become of your dear laser?
+Fa la la la la, la la la la
+Seems you can't now seem to raise her!
+Fa la la la la, la la la la
+Could commands hold riddles in hist'ry?
+Fa la la la la, la la la la
+Nay! You'll ever suffer myst'ry!
+Fa la la la la, la la la la
+```
+
+It clearly tells us that we should have a look at the command history on this machine.
+Before we do that though, let's also have a look at the URI from the MOTD:
+
+```
+PS /home/elf> (Invoke-WebRequest -Uri http://localhost:1225/).RawContent
+HTTP/1.0 200 OK
+Server: Werkzeug/0.16.0
+Server: Python/3.6.9
+Date: Tue, 17 Dec 2019 09:19:54 GMT
+Content-Type: text/html; charset=utf-8
+Content-Length: 860
+
+<html>
+<body>
+<pre>
+----------------------------------------------------
+Christmas Cheer Laser Project Web API
+----------------------------------------------------
+Turn the laser on/off:
+GET http://localhost:1225/api/on
+GET http://localhost:1225/api/off
+
+Check the current Mega-Jollies of laser output
+GET http://localhost:1225/api/output
+
+Change the lense refraction value (1.0 - 2.0):
+GET http://localhost:1225/api/refraction?val=1.0
+
+Change laser temperature in degrees Celsius:
+GET http://localhost:1225/api/temperature?val=-10
+
+Change the mirror angle value (0 - 359):
+GET http://localhost:1225/api/angle?val=45.1
+
+Change gaseous elements mixture:
+POST http://localhost:1225/api/gas
+POST BODY EXAMPLE (gas mixture percentages):
+O=5&H=5&He=5&N=5&Ne=20&Ar=10&Xe=10&F=20&Kr=10&Rn=10
+----------------------------------------------------
+</pre>
+</body>
+</html>
+```
+
+That seems to give us a clear set of instructions to turn on the laser. It seems that we need to
+1. Shut down the laser
+2. Update the refraction, temperature and angle values with GET requests
+3. Update the gaseous element mixture with a POST request
+4. Turn on the laser
+5. Check the laser output.
+
+In order to do that though, we will need to find the correct settings first.
+So let's first have a look at the command history
+
+```
+PS /home/elf> Get-History
+
+  Id CommandLine
+  -- -----------
+   1 Get-Help -Name Get-Process
+   2 Get-Help -Name Get-\*
+   3 Set-ExecutionPolicy Unrestricted
+   4 Get-Service | ConvertTo-HTML -Property Name, Status > C:\services.htm
+   5 Get-Service | Export-CSV c:\service.csv
+   6 Get-Service | Select-Object Name, Status | Export-CSV c:\service.csv
+   7 (Invoke-WebRequest http://127.0.0.1:1225/api/angle?val=65.5).RawContent
+   8 Get-EventLog -Log "Application"
+   9 I have many name=value variables that I share to applications system wide. At a command I will reveal my secrets once you Get my Child Items.
+  10 (Invoke-WebRequest -Uri http://localhost:1225/).RawContent
+```
+
+We immediately notice the value for the angle (`angle?val=65.5`). We cannot be sure that this is the correct value, but we absolutely note it down in case it turns out to be.
+
+We also get another clue:
+> I have many name=value variables that I share to applications system wide. At a command I will reveal my secrets once you Get my Child Items.
+This is referring to name-value pairs system wide. We should have a look at the environment variables
+
+```
+PS /home/elf> gci Env:\* | Select-Object Value
+
+Value
+-----
+false
+en_US.UTF-8
+laserterminal
+/var/mail/elf
+laserterminal
+en_US.UTF-8
+elf
+/home/elf/elf
+/home/elf
+a6e1be0d-4ded-4727-9160-d5a2cdb0fbdf
+/opt/microsoft/powershell/6:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+/bin/su
+Squeezed and compressed I am hidden away. Expand me from my prison and I will show you the way. Recurse through all /etc and Sort on my LastWriteTime to reveal im the newest of all.
+elf
+/var/cache/microsoft/powershell/PSModuleAnalysisCache/ModuleAnalysisCache
+xterm
+1
+5ff2894c232d
+/home/elf/.local/share/powershell/Modules:/usr/local/share/powershell/Modules:/opt/microsoft/powershell/6/Modules
+elf
+elf
+/home/elf
+```
+We see a new hint for us to follow:
+> Squeezed and compressed I am hidden away.
+> Expand me from my prison and I will show you the way.
+> Recurse through all /etc and Sort on my LastWriteTime to reveal im the newest of all.
+
+NOTE:
+> We also notice this strange string `a6e1be0d-4ded-4727-9160-d5a2cdb0fbdf` moments later followed by `5ff2894c232d`. This only caught our eye while creating this writeup.
+> It seems random but it actually resembled the indentifiers and keys used for the [Recover Cleartext Document](#recover-cleartext-document) objective.
+> We tried using the identifier to extract a key from the server backend, but there does not seem to be a match. And since we have no encrypted document to decrypt we have no use for the key either.
+> We might have missed something, but this seems to be an easter egg of some kind. If anyone figured out if there was something behind this please let me know.
+
+We search for the archive and find it quickly.
+We then extract it and find two things inside:
+- A binary file
+- A new hint.
+
+```
+PS /etc> gci -R | sort LastWriteTime -Descending
+
+    Directory: /etc/apt
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+--r---          12/17/19 10:17 AM        5662902 archive
+
+PS /tmp> New-Item -ItemType directory out
+
+
+    Directory: /tmp
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----          12/17/19 10:27 AM                out
+
+PS /tmp> Expand-Archive -Path /etc/apt/archive -DestinationPath /tmp/out
+
+PS /tmp/out> dir
+
+
+    Directory: /tmp/out
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+d-----          12/17/19 10:28 AM                refraction
+
+PS /tmp/out> cd ./refraction/
+PS /tmp/out/refraction> dir
+
+
+    Directory: /tmp/out/refraction
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+------           11/7/19 11:57 AM            134 riddle
+------           11/5/19  2:26 PM        5724384 runme.elf
+
+```
+
+We can run the binary after we properly set it's permissions. This is a linux system so we use chmod to make this binary executable.
+
+```
+PS /tmp/out/refraction> chmod +x ./runme.elf
+PS /tmp/out/refraction> ./runme.elf
+refraction?val=1.867
+```
+
+Excellent, we found the value for refraction (`refraction?val=1.867`). We now check out the riddle file.
+
+```
+PS /tmp/out/refraction> type ./riddle
+Very shallow am I in the depths of your elf home. You can find my entity by using my md5 identity:
+
+25520151A320B5B0D21561F92C8F6224
+```
+
+So, we need to get a list of md5 hashes for each file in the home directory and then find the one that matches the given md5 hash.
+We can do so using the following powershell command:
+
+```
+PS /home/elf> Get-ChildItem -R -File | Foreach {Get-FileHash -Algorithm MD5 $_.fullname} | Where-Object {$_.Hash -eq '25520151A320B5B0D21561F92C8F6224'}
+
+Algorithm       Hash                                                                   Path
+---------       ----                                                                   ----
+MD5             25520151A320B5B0D21561F92C8F6224                                       /home/elf/depths/produce/thhy5hll.txt
+
+PS /home/elf> type /home/elf/depths/produce/thhy5hll.txt
+temperature?val=-33.5
+
+I am one of many thousand similar txt's contained within the deepest of /home/elf/depths. Finding me will give you the most strength but doing so will require Piping all the FullName's to Sort Length.
+```
+
+Great, we find the correct setting for the temperature (`temperature?val=-33.5`). We also see a new hint telling us to sort all the files on their fullname size.
+We can do this fairly easily, do note that we need `Format-List` to make sure we get the full output.
+
+```
+PS /home/elf> gci -R -File | select-object FullName, @{Name="Nlength";Expression={$_.FullName.Length}} | sort-object Nlength | select -last 1 | Format-List
+
+FullName : /home/elf/depths/larger/cloud/behavior/beauty/enemy/produce/age/chair/unknown/escape/vote/long/writer/behind/ahead/thin/occasionally/explore/tape/wherever/practical/therefore/c
+           ool/plate/ice/play/truth/potatoes/beauty/fourth/careful/dawn/adult/either/burn/end/accurate/rubbed/cake/main/she/threw/eager/trip/to/soon/think/fall/is/greatest/become/accident
+           /labor/sail/dropped/fox/0jhj5xz6.txt
+Nlength  : 388
+PS /home/elf> type /home/elf/depths/larger/cloud/behavior/beauty/enemy/produce/age/chair/unknown/escape/vote/long/writer/behind/ahead/thin/occasionally/explore/tape/wherever/practical/therefore/cool/plate
+/ice/play/truth/potatoes/beauty/fourth/careful/dawn/adult/either/burn/end/accurate/rubbed/cake/main/she/threw/eager/trip/to/soon/think/fall/is/greatest/become/accident/labor/sail/dropped/fox/0jhj5xz6.txt
+Get process information to include Username identification. Stop Process to show me you're skilled and in this order they must be killed:
+
+bushy
+alabaster
+minty
+holly
+
+Do this for me and then you /shall/see .
+```
+
+No setting found this time, but we do get new instructions! We do as the file commands and kill the processes in the desired order.
+
+```
+PS /home/elf> Get-Process -IncludeUserName
+
+     WS(M)   CPU(s)      Id UserName                       ProcessName
+     -----   ------      -- --------                       -----------
+     28.83     1.92       6 root                           CheerLaserServi
+      3.37     0.03       1 root                           init
+      0.75     0.00      23 bushy                          sleep
+      0.77     0.00      26 alabaster                      sleep
+      0.80     0.00      27 minty                          sleep
+      0.86     0.00      29 holly                          sleep
+      3.49     0.00      30 root                           su
+
+PS /home/elf> Stop-Process -id 23
+PS /home/elf> Stop-Process -id 26
+PS /home/elf> Stop-Process -id 27
+PS /home/elf> Stop-Process -id 29
+PS /home/elf> Get-Process -IncludeUserName
+
+     WS(M)   CPU(s)      Id UserName                       ProcessName
+     -----   ------      -- --------                       -----------
+     27.26     2.41       6 root                           CheerLaserServi
+    158.05    33.87      31 elf                            elf
+      3.37     0.03       1 root                           init
+      3.49     0.00      30 root                           su
+
+PS /home/elf> type /shall/see
+Get the .xml children of /etc - an event log to be found. Group all .Id's and the last thing will be in the Properties of the lonely unique event Id.
+```
+
+Still no additional settings, but more instructions to follow!
+We need to list all the event id's in the file, count them, sort them and figure out which event only appears once:
+
+```
+PS /tmp/out/refraction> gci -R /etc -include \*.xml -ErrorAction 'SilentlyContinue'
+
+
+    Directory: /etc/systemd/system/timers.target.wants
+
+Mode                LastWriteTime         Length Name
+----                -------------         ------ ----
+--r---          11/18/19  7:53 PM       10006962 EventLog.xml
+
+PS /home/elf> type /etc/systemd/system/timers.target.wants/EventLog.xml | Select-String -Pattern '<I32 N="id"' | Group-Object | Select-Object -Property Count, Name | Sort-Object -Property Count -Descending
+
+Count Name
+----- ----
+  905       <I32 N="Id">5</I32>
+  179       <I32 N="Id">3</I32>
+   98       <I32 N="Id">6</I32>
+   39       <I32 N="Id">2</I32>
+    2       <I32 N="Id">4</I32>
+    1       <I32 N="Id">1</I32>
+```
+
+We see that event with id '1' only appears one time. We now display the text around this event:
+
+
+```
+PS /home/elf> type /etc/systemd/system/timers.target.wants/EventLog.xml | Select-String -Pattern '<I32 N="id">1' -Context 20,200
+
+<-- Output removed for brevity -->
+        <T>System.Diagnostics.Eventing.Reader.EventLogRecord</T>
+        <T>System.Diagnostics.Eventing.Reader.EventRecord</T>
+        <T>System.Object</T>
+      </TN>
+      <ToString>System.Diagnostics.Eventing.Reader.EventLogRecord</ToString>
+      <Props>
+>       <I32 N="Id">1</I32>
+        <By N="Version">5</By>
+        <Nil N="Qualifiers" />
+
+<-- Output removed for brevity -->
+
+            <Obj RefId="18016">
+              <TNRef RefId="1806" />
+              <ToString>System.Diagnostics.Eventing.Reader.EventProperty</ToString>
+              <Props>
+                <S N="Value">C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe -c "`$correct_gases_postbody = @{`n    O=6`n    H=7`n    He=3`n    N=4`n    Ne=22`n    Ar=11`n    
+Xe=10`n    F=20`n    Kr=8`n    Rn=9`n}`n"</S>
+              </Props>
+            </Obj>
+
+<-- Output removed for brevity -->
+
+```
+
+We find here the post body for the correct gases.
+$correct_gases_postbody = @{`n    O=6`n    H=7`n    He=3`n    N=4`n    Ne=22`n    Ar=11`n    Xe=10`n    F=20`n    Kr=8`n    Rn=9`n}
+
+
+Final Values:
+
+- angle?val=65.5
+- refraction?val=1.867
+- temperature?val=-33.5
+- Gasses:
+  - O=6
+  - H=7
+  - He=3
+  - N=4
+  - Ne=22
+  - Ar=11
+  - Xe=10
+  - F=20
+  - Kr=8
+  - Rn=9
+
+So we can now submit these values to the laser:
+
+```
+PS /home/elf> (Invoke-WebRequest -Uri http://localhost:1225/api/off).RawContent
+PS /home/elf> (Invoke-WebRequest -Uri http://localhost:1225/api/refraction?val=1.867).RawContent
+PS /home/elf> (Invoke-WebRequest -Uri http://localhost:1225/api/temperature?val=-33.5).RawContent
+PS /home/elf> (Invoke-WebRequest -Uri http://localhost:1225/api/angle?val=65.5).RawContent
+PS /home/elf> $postParams = @{O=6;H=7;He=3;N=4;Ne=22;Ar=11;Xe=10;F=20;Kr=8;Rn=9;}
+PS /home/elf> (Invoke-WebRequest -Uri http://localhost:1225/api/gas -Method POST -Body $postParams).RawContent
+PS /home/elf> (Invoke-WebRequest -Uri http://localhost:1225/api/on).RawContent
+PS /home/elf> (Invoke-WebRequest -Uri http://localhost:1225/api/output).RawContent
+```
+
+And we are done.
+
 
 -----------------------------
 ### Zeek JSON Analysis
