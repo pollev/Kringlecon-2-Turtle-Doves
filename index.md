@@ -2310,6 +2310,118 @@ We can also just look at the 'interesting field' `DestinationHostame` at the lef
 ![Splunk Interesting Fields](images/splunk_interesting_fields.png)
 
 
+##### Challenge 4
+Objective:
+> What document is involved with launching the malicious PowerShell code?
+> Please provide just the filename. (Example: results.txt)
+
+Solution:
+> 19th Century Holiday Cheer Assignment.docm
+
+Search:  
+We get told to search for all the powershell logs on the system:
+
+```
+index=main sourcetype="WinEventLog:Microsoft-Windows-Powershell/Operational"
+```
+We learn that we can order results by time by piping them to '| reverse'.
+We then search for a 5 second time window from the oldest event.
+```
+index=main sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational (within the time window)
+```
+- 5864 (16E8) -> dead end
+- 6268 (187C)
+
+![Splunk Process Ids](images/splunk_proc_ids.png)
+
+We can use those in the following search:
+```
+index=main sourcetype=WinEventLog EventCode=4688 process_id=0x187C
+```
+From here we find one log that contains a word process opening the file
+```
+Process Command Line: "C:\Program Files (x86)\Microsoft Office\Root\Office16\WINWORD.EXE" /n "C:\Windows\Temp\Temp1_Buttercups_HOL404_assignment (002).zip\19th Century Holiday Cheer Assignment.docm" /o ""
+```
+
+##### Challenge 5
+Objective:
+> How many unique email addresses were used to send Holiday Cheer essays to Professor Banas?
+> Please provide the numeric value. (Example: 1)
+
+Solution:
+> 21
+
+Search:  
+We get told how to search through stoQ data:
+```
+index=main sourcetype=stoq | table _time results{}.workers.smtp.to results{}.workers.smtp.from  results{}.workers.smtp.subject results{}.workers.smtp.body | sort - _time
+```
+We also get told that all emails had to be with subject line: 'Holiday Cheer Assignment Submission'.
+
+We narrow down our search to only the fields containing the subject line and emails going only to carl:
+```
+index=main sourcetype=stoq | table _time results{}.workers.smtp.to results{}.workers.smtp.from  results{}.workers.smtp.subject results{}.workers.smtp.body | search results{}.workers.smtp.subject="*Holiday
+ Cheer Assignment Submission*" results{}.workers.smtp.to="*carl*"
+```
+
+We find 21 results.
+
+
+##### Challenge 6
+Objective:
+> What was the password for the zip archive that contained the suspicious file?
+
+Solution:
+> 123456789
+
+Search:  
+We just search the email bodies for things containing the word "password"
+```
+index=main sourcetype=stoq | table _time results{}.workers.smtp.to results{}.workers.smtp.from  results{}.workers.smtp.subject results{}.workers.smtp.body | search results{}.workers.smtp.body="*password*"
+```
+
+
+##### Challenge 7
+Objective:
+> What email address did the suspicious file come from?
+
+Solution:
+> Bradly.Buttercups@eIfu.org
+
+Search:  
+From the previous challenge we immediately find this one.
+
+
+##### Main Challenge
+Objective:
+> What was the message for Kent that the adversary embedded in this attack?
+
+Solution:
+> Kent you are so unfair. And we were going to make you the king of the Winter Carnival.
+
+Search:  
+We start with this email:
+```
+index=main sourcetype=stoq  "results{}.workers.smtp.from"="bradly buttercups <bradly.buttercups@eifu.org>"
+```
+We add the eval code givent to us to make the output more readable:
+```
+index=main sourcetype=stoq  "results{}.workers.smtp.from"="bradly buttercups <bradly.buttercups@eifu.org>" | eval results = spath(_raw, "results{}")
+| mvexpand results
+| eval path=spath(results, "archivers.filedir.path"), filename=spath(results, "payload_meta.extra_data.filename"), fullpath=path."/".filename
+| search fullpath!=""
+| table filename,fullpath
+```
+We find the .docm file:
+```
+3   19th Century Holiday Cheer Assignment.docm  /home/ubuntu/archive/c/6/e/1/7/c6e175f5b8048c771b3a3fac5f3295d2032524af/19th Century Holiday Cheer Assignment.docm
+```
+When we open this file, we find a message telling us to look in core.xml instead.
+```
+19  core.xml    /home/ubuntu/archive/f/f/1/e/a/ff1ea6f13be3faabd0da728f514deb7fe3577cc4/core.xml
+```
+
+In that file we find the message to Kent.
 
 
 #### Code
