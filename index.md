@@ -2430,7 +2430,7 @@ index=main sourcetype=XmlWinEventLog:Microsoft-Windows-Sysmon/Operational (withi
 - 5864 (16E8) -> dead end
 - 6268 (187C)
 
-![Splunk Process Ids](images/splunk_proc_ids.png)
+![Splunk Process Ids](images/splunk_procids.png)
 
 We can use those in the following search:
 ```
