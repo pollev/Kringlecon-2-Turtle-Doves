@@ -2301,6 +2301,15 @@ root@ubuntu-tmp:/home/polle/zeek# rita show-beacons holidayhack -H | less -S
 
 We find the first IP with a score of almost 1. The source IP is our flag
 
+#### Solution 2
+I actually realized during the writeup that the log archive contains a folder called ELFU.
+This folder contains a webpage that hosts the RITA GUI and will allow us to see the parsed logs.
+
+All we need to do to solve the challenge this way is double click on index.html and browse to the 'Beacons' page.
+Here we immediately find the same output we found before:
+
+![RITA Webpage](images/rita_webpage.png)
+
 
 #### Code
 The challenge code is `192.168.134.130`
