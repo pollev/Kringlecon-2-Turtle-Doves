@@ -1848,10 +1848,10 @@ And we are done.
 ### Zeek JSON Analysis
 #### Context
 Initial Dialog:
->
+> todo
 
 Completed Dialog:
->
+> todo
 
 
 Challenge-url:  
@@ -2613,20 +2613,208 @@ Krampus:
 
 
 #### Code
-Krampus Hollyfeld
+The code for this challenge is `Krampus Hollyfeld`.
 
 
 -----------------------------
 ### Bypassing the Frido Sleigh CAPTEHA
 #### Context
 Objective
->
+> todo
+
+
+Hint:
+Krampus
+> Hello there!  I’m Krampus Hollyfeld.
+> I maintain the steam tunnels underneath Elf U,
+> Keeping all the elves warm and jolly.
+> Though I spend my time in the tunnels and smoke,
+> In this whole wide world, there's no happier bloke!
+> Yes, I borrowed Santa’s turtle doves for just a bit.
+> Someone left some scraps of paper near that fireplace, which is a big fire hazard.
+> I sent the turtle doves to fetch the paper scraps.
+> But, before I can tell you more, I need to know that I can trust you.
+> Tell you what – if you can help me beat the [Frido Sleigh](https://fridosleigh.com/) contest (Objective 8), then I'll know I can trust you.
+> The contest is here on my screen and at [fridosleigh.com](https://fridosleigh.com/).
+> No purchase necessary, enter as often as you want, so I am!
+> They set up the rules, and lately, I have come to realize that I have certain materialistic, cookie needs.
+> Unfortunately, it's restricted to elves only, and I can't bypass the CAPTEHA.
+> (That's Completely Automated Public Turing test to tell Elves and Humans Apart.)
+> I've already cataloged [12,000 images](https://downloads.elfu.org/capteha_images.tar.gz) and decoded the [API interface](https://downloads.elfu.org/capteha_api.py).
+> Can you help me bypass the CAPTEHA and submit lots of entries?
+
+
+Alabaster Snowball
+> Who would do such a thing??  Well, it IS a good looking cat.
+> Have you heard about the Frido Sleigh contest?
+> There are some serious prizes up for grabs.
+> The content is strictly for elves. Only elves can pass the CAPTEHA challenge required to enter.
+> I heard there was a talk at KCII about using machine learning to defeat challenges like this.
+> I don't think anything could ever beat an elf though!
+
+
+API download:  
+https://downloads.elfu.org/capteha_api.py
+
+
+Images download:  
+https://downloads.elfu.org/capteha_images.tar.gz
+
+
+Relevant talk and demo:  
+- https://www.youtube.com/watch?v=jmVPLwjm_zs
+- https://github.com/chrisjd20/img_rec_tf_ml_demo
+
+
+Location:  
+Steam Tunnels
+
 
 #### Solution
+The solution is pretty much provided for us.
+We have the api script to submit the correct responses.
+We have the github script to train our machine learning model
+We then just need to train the model and connect it to the api script.
+
+
+Upon completing the challenge, you receive a personalized email with the objective code.
+That is all.
+
+We start by:
+- Cloning the git repo
+- Downloading the api script
+- Downloading the images archive
+- Unzipping the archive
+```
+polle@polle-pc:/tmp/solution $ git clone  https://github.com/chrisjd20/img_rec_tf_ml_demo
+<-- Output removed for brevity -->
+polle@polle-pc:/tmp/solution $ cd img_rec_tf_ml_demo/
+<-- Output removed for brevity -->
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ wget https://downloads.elfu.org/capteha_api.py
+<-- Output removed for brevity -->
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ wget https://downloads.elfu.org/capteha_images.tar.gz
+<-- Output removed for brevity -->
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ rm training_images/* -r
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ mv capteha_images.tar.gz training_images/
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ cd training_images
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo/training_images $ tar xvf capteha_images.tar.gz
+<-- Output removed for brevity -->
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo/training_images $ cd ..
+```
+
+We can now already start the training process for the ML model:
+```
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ python3 retrain.py --image_dir training_image
+<-- Output removed for brevity -->
+```
+While that is running, we can start on merging the prediction script and the api script.
+We copy the entire contents of `capteha_api.py` into `predict_images_using_trained_model.py`.
+Rather than making the two scripts work together, we are just going to merge them into one. As that will be significantly faster.
+```
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ cat capteha_api.py >> predict_images_using_trained_model.py
+```
+
+We change the original `def main()` method for the prediction script to `def main_predict()`
+We also remove the first occurance of the code block (because it is duplicated):
+```
+if __name__ == "__main__":
+    main()
+```
+
+We should also add the `base64` and `re` modules as we are going to need those. Just add the following below the other imports at the top of the file
+```
+import base64
+import re
+```
+
+Next, we comment out the following line:
+```
+final_answer = ','.join( [ img['uuid'] for img in b64_images ] )
+```
+So it looks like:
+```
+#final_answer = ','.join( [ img['uuid'] for img in b64_images ] )
+```
+Now we can replace the text
+```
+    '''
+    MISSING IMAGE PROCESSING AND ML IMAGE PREDICTION CODE GOES HERE
+    '''
+```
+with our implementation code:
+```
+    for img in b64_images:
+        i_uuid = img['uuid']
+        i_base64 = img['base64']
+        open(f"unknown_images/{i_uuid}.png", 'wb').write(base64.b64decode(i_base64))
+
+    results = main_predict() 
+
+    found_images = list()
+    for img in results:
+        if results[img] in challenge_image_types:
+            found_images.append(img)
+
+    final_answer = ','.join( found_images )
+```
+Now all that remains is to edit the `main_predict` function to return our data in an appropriate format:
+We need to replace the following block:
+```
+for prediction in prediction_results:
+    print('TensorFlow Predicted {img_full_path} is a {prediction} with {percent:.2%} Accuracy'.format(**prediction))
+
+```
+with our own snippet:
+```
+uuids = {}
+for prediction in prediction_results:
+    uuids[re.search('/([^/]+?).png', prediction['img_full_path']).groups(1)[0]] = prediction['prediction']
+
+return uuids
+```
+
+And that is all. We can fill in our email inside the script and run it to win! Do make sure you wait until the training process we started earlier is complete though! We should also clear the folder `unknown_images` before each run.
+```
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ rm unknown_images/*
+polle@polle-pc:/tmp/solution/img_rec_tf_ml_demo $ ./predict_images_using_trained_model.py
+Processing Image unknown_images/f7882620-e587-11e9-97c1-309c23aaf0ac.png
+Processing Image unknown_images/3e4507eb-e587-11e9-97c1-309c23aaf0ac.png
+Processing Image unknown_images/b00dae0e-e587-11e9-97c1-309c23aaf0ac.png
+Processing Image unknown_images/df0f4002-e587-11e9-97c1-309c23aaf0ac.png
+<-- Output removed for brevity -->
+Processing Image unknown_images/e8ce2a85-e586-11e9-97c1-309c23aaf0ac.png
+Processing Image unknown_images/205a8100-e587-11e9-97c1-309c23aaf0ac.png
+Processing Image unknown_images/ee771b43-e586-11e9-97c1-309c23aaf0ac.png
+Processing Image unknown_images/2b949669-e586-11e9-97c1-309c23aaf0ac.png
+Waiting For Threads to Finish...
+CAPTEHA Solved!
+Submitting lots of entries until we win the contest! Entry #
+Submitting lots of entries until we win the contest! Entry #
+Submitting lots of entries until we win the contest! Entry #3
+<-- Output removed for brevity -->
+Submitting lots of entries until we win the contest! Entry #102
+{"data":"<h2 id=\"result_header\"> Entries for email address <<REDACTED>> no longer accepted as our systems show your email was already randomly selected as a winner! Go check your email to get 
+your winning code. Please allow up to 3-5 minutes for the email to arrive in your inbox or check your spam filter settings. <br><br> Congratulations and Happy Holidays!</h2>","request":true}
+```
+We now receive an email and can submit our winning code
+
+![Capthena Winner](images/capthena_winner.png)
+
+
+Completion text:
+Krampus
+> You did it!  Thank you so much.  I can trust you!
+> To help you, I have flashed the firmware in your badge to unlock a useful new feature: magical teleportation through the steam tunnels.
+> As for those scraps of paper, I scanned those and put the images on my server.
+> I then threw the paper away.
+> Unfortunately, I managed to lock out my account on the server.
+> Hey! You’ve got some great skills. Would you please hack into my system and retrieve the scans?
+> I give you permission to hack into it, solving Objective 9 in your badge.
+> And, as long as you're traveling around, be sure to solve any other challenges you happen across.
+
 
 #### Code
-
-
+The code for this challenge is `8Ia8LiZEwvyZr2WO`.
 
 
 -----------------------------
