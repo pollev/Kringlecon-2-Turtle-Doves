@@ -2521,13 +2521,90 @@ The challenge code is `Kent you are so unfair. And we were going to make you the
 ### Get Access To The Steam Tunnels
 #### Context
 Objective
->
+> Gain access to the steam tunnels.
+> Who took the turtle doves?
+> Please tell us their first and last name.
+> For hints on achieving this objective, please visit Minty's dorm room and talk with Minty Candy Cane.
+
+Hint:
+Minty Candycane
+> You made it - congrats!
+> Have you played with the key grinder in my room?  Check it out!
+> It turns out: if you have a good image of a key, you can physically copy it.
+> Maybe you'll see someone hopping around with a key here on campus.
+> _Sometimes you can find it in the Network tab of the browser console._
+> Deviant has a great talk on it at this year's Con.
+> He even has a collection of key bitting templates for common vendors like Kwikset, Schlage, and Yale.
+
+
+Challenge-url:  
+https://key.elfu.org?challenge=bitting-cutter
+
+
+Direct key generation:  
+https://key.elfu.org/backend/keys/SC4_preview/004000.png
+
+
+Submit key to lock:  
+https://thisisit.elfu.org/lock.php
+
+
+Location:  
+Minty's Dorm Room
+
 
 #### Solution
+We see a man (Krampus) run away with a key attached to his pocket when we enter the room.
+We can get a better image of the key (and Krampus) by watching our Network tab in firefox.
+
+We notice that a bunch of images are being pulled when we enter the room (including the one of Krampus).
+We see the image here.
+
+URL: `2019.kringlecon.com/images/avatars/elves/krampus.png`
+
+![Krampus Key](images/krampus_key.png)
+
+We can have a closer look at the key now and try to guess the bitting values.
+Our first guess (just eyeballing the key) is the following:
+```
+122521
+```
+
+However, we can use any image editor to get a better idea of the key and then use the key bitting templates provided by Deviant.
+By going over the templates from Deviant we quickly find the right template [here](https://github.com/deviantollam/decoding/blob/master/Key%20Decoding/Decoding%20-%20Schlage.png):
+
+We are dealing with a 'Schlage' key.
+![Krampus Template](images/krampus_template.png)
+
+We download the template and overlay it in Gimp to find the correct values.
+We find that the correct value is 122520. Pretty close to what we expected from first glance.
+
+We create the key and open the door.
+
+After travelling through the tunnels, we find Krampus and learn that his full name is Krampus Hollyfeld and that he took the doves.
+
+Krampus:
+> Hello there!  I’m Krampus Hollyfeld.
+> I maintain the steam tunnels underneath Elf U,
+> Keeping all the elves warm and jolly.
+> Though I spend my time in the tunnels and smoke,
+> In this whole wide world, there's no happier bloke!
+> Yes, I borrowed Santa’s turtle doves for just a bit.
+> Someone left some scraps of paper near that fireplace, which is a big fire hazard.
+> I sent the turtle doves to fetch the paper scraps.
+> But, before I can tell you more, I need to know that I can trust you.
+> Tell you what – if you can help me beat the [Frido Sleigh](https://fridosleigh.com/) contest (Objective 8), then I'll know I can trust you.
+> The contest is here on my screen and at [fridosleigh.com](https://fridosleigh.com/).
+> No purchase necessary, enter as often as you want, so I am!
+> They set up the rules, and lately, I have come to realize that I have certain materialistic, cookie needs.
+> Unfortunately, it's restricted to elves only, and I can't bypass the CAPTEHA.
+> (That's Completely Automated Public Turing test to tell Elves and Humans Apart.)
+> I've already cataloged [12,000 images](https://downloads.elfu.org/capteha_images.tar.gz) and decoded the [API interface](https://downloads.elfu.org/capteha_api.py).
+> Can you help me bypass the CAPTEHA and submit lots of entries?
+
 
 #### Code
-
-
+Krampus Hollyfeld
 
 
 -----------------------------
