@@ -503,7 +503,7 @@ Bushy Evergreen
 
 
 Challenge-url:  
-https://docker2019.kringlecon.com/?challenge=edescape
+[https://docker2019.kringlecon.com/?challenge=edescape](https://docker2019.kringlecon.com/?challenge=edescape)
 
 
 Location:  
@@ -572,7 +572,7 @@ Tangle Coalbox
 
 
 Challenge-url:  
-https://keypad.elfu.org?challenge=keypad
+[https://keypad.elfu.org?challenge=keypad](https://keypad.elfu.org?challenge=keypad)
 
 
 Location:  
@@ -586,9 +586,11 @@ We are also told that one of those numbers is used twice.
 The immediate thing to try would be "1337" (or 'leet'). However this number is not prime. We could solve this challenge by grabbing a list of primes from the internet and removing all entries that have a digit not equal to 1, 3 or 7. We could then remove all entries that do not have a duplicate digit. We can then just write a script to try all the remaining possibilities.
 
 Or you could do what we did, try the first options that come to your mind, one of them being '7331' (the reverse of 1337) and get lucky.
+
 ![keypad](images/keypad_code.png)
 
 That's all there is to this challenge, we do however find a little easter egg on the wall inside the dorm after we enter the now unlocked door. It seems the ElfU students need a reminder sometimes and have written the code down on the wall.
+
 ![keypad_egg](images/keypad_egg.png)
 
 -----------------------------
@@ -615,7 +617,7 @@ SugarPlum Mary
 
 
 Challenge-url:  
-https://docker2019.kringlecon.com/?challenge=path
+[https://docker2019.kringlecon.com/?challenge=path](https://docker2019.kringlecon.com/?challenge=path)
 
 
 Location:  
@@ -715,7 +717,7 @@ Alabaster Snowball
 
 
 Challenge-url:  
-https://docker2019.kringlecon.com/?challenge=nyanshell
+[https://docker2019.kringlecon.com/?challenge=nyanshell](https://docker2019.kringlecon.com/?challenge=nyanshell)
 
 Location:  
 Speaker UNpreparedness Room
@@ -759,6 +761,7 @@ password: Password2
 
 #### Solution
 If we just try to `su` to alabaster_snowball, we see something very unexpected happen:
+
 ![NYAN-NYAN-NYAN](images/nyanshell.png)
 
 
@@ -864,7 +867,7 @@ Holly Evergreen
 
 
 Challenge-url:  
-https://docker2019.kringlecon.com/?challenge=mongo
+[https://docker2019.kringlecon.com/?challenge=mongo](https://docker2019.kringlecon.com/?challenge=mongo)
 
 
 Location:  
@@ -997,7 +1000,7 @@ We see the interesting looking database 'solution'.
 ```
 Well, it seems like we did it, so lets just run that final command.
 ```
-db.loadServerScripts();displaySolution();
+> db.loadServerScripts();displaySolution();
 ```
 
 And we are done.
@@ -1032,7 +1035,7 @@ Kent Tinseltooth
 
 
 Challenge-url:  
-https://docker2019.kringlecon.com/?challenge=iptables
+[https://docker2019.kringlecon.com/?challenge=iptables](https://docker2019.kringlecon.com/?challenge=iptables)
 
 Location:  
 Student Union
@@ -1128,7 +1131,7 @@ Minty Candycane
 
 
 Challenge-url:  
-https://trail.elfu.org/gameselect/
+[https://trail.elfu.org/gameselect/](https://trail.elfu.org/gameselect/)
 
 
 Location:  
@@ -1214,7 +1217,7 @@ Our objective is now simple, we update two values:
 - The distance
 - The hash
 
-Start of with a clean slate (hash of value 1626) and we increase the distance from 0 to 7999. We then generate a hash `md5(1626 + 7999)` and change the hash value to reflect that.
+Start of with a clean slate (hash of value 1626) and we increase the distance from 0 to 7999. We then generate a hash `md5(1626 + 7999)` and change the browser value to reflect that.
 In linux we can do this easily:
 ```
 polle@polle-pc:~ $ echo -n "$((1626 + 7999))" | md5sum
@@ -1254,12 +1257,12 @@ Pepper Minstix
 
 
 Challenge-url:  
-https://incident.elfu.org/
+[https://incident.elfu.org/](https://incident.elfu.org/)
 
 
 Other Links:  
-https://graylog.elfu.org/
-https://report.elfu.org/
+[https://graylog.elfu.org/](https://graylog.elfu.org/)
+[https://report.elfu.org/](https://report.elfu.org/)
 
 
 Location:  
@@ -1459,7 +1462,7 @@ Sparkle Redberry
 
 
 Challenge-url:  
-https://docker2019.kringlecon.com/?challenge=powershell
+[https://docker2019.kringlecon.com/?challenge=powershell](https://docker2019.kringlecon.com/?challenge=powershell)
 
 Location:  
 The Laboratory
@@ -1874,7 +1877,7 @@ Wunorse Openslae
 
 
 Challenge-url:  
-https://docker2019.kringlecon.com/?challenge=jq
+[https://docker2019.kringlecon.com/?challenge=jq](https://docker2019.kringlecon.com/?challenge=jq)
 
 
 Location:  
@@ -1901,7 +1904,7 @@ cat conn.log | jq
 ```
 
 We see that most entries have a `duration` field.
-We can try to sort on that fields as a numeric value.
+We can try to sort on that field as a numeric value.
 
 ```
 elf@51570ada4eb2:~$ cat conn.log | jq ".duration" | sort -g | uniq | tail -n 1
@@ -2055,11 +2058,11 @@ Bushy Evergreen
 
 
 Event data log:  
-https://downloads.elfu.org/Security.evtx.zip
+[https://downloads.elfu.org/Security.evtx.zip](https://downloads.elfu.org/Security.evtx.zip)
 
 
 DeepBlueCLI tool:  
-https://github.com/sans-blue-team/DeepBlueCLI
+[https://github.com/sans-blue-team/DeepBlueCLI](https://github.com/sans-blue-team/DeepBlueCLI)
 
 
 #### Solution
@@ -2110,11 +2113,11 @@ SugarPlum Mary
 
 
 Sysmon logs:  
-https://downloads.elfu.org/sysmon-data.json.zip
+[https://downloads.elfu.org/sysmon-data.json.zip](https://downloads.elfu.org/sysmon-data.json.zip)
 
 
 Josh Wright blog post:  
-https://pen-testing.sans.org/blog/2019/12/10/eql-threat-hunting/
+[https://pen-testing.sans.org/blog/2019/12/10/eql-threat-hunting/](https://pen-testing.sans.org/blog/2019/12/10/eql-threat-hunting/)
 
 
 #### Solution
@@ -2222,11 +2225,11 @@ Sparkle Redberry
 
 
 Zeek logs:  
-https://downloads.elfu.org/elfu-zeeklogs.zip
+[https://downloads.elfu.org/elfu-zeeklogs.zip](https://downloads.elfu.org/elfu-zeeklogs.zip)
 
 
 Rita in this case refers to:  
-https://github.com/activecm/rita
+[https://github.com/activecm/rita](https://github.com/activecm/rita)
 
 
 #### Solution
@@ -2304,7 +2307,7 @@ root@ubuntu-tmp:/home/polle/zeek# rita import elfu-zeeklogs holidayhack
         [-] Done!
 ```
 
-We give it the dataset name 'holidayhack'. We wait till rita finishes parsing the logs.
+We give it the dataset name `holidayhack`. We wait until rita finishes parsing the logs.
 Once that is done we can analyse them. We search for the beacons to try and find the infected machine.
 
 ```
@@ -2355,7 +2358,7 @@ Professor Banas
 
 
 Url:  
-https://splunk.elfu.org/
+[https://splunk.elfu.org/](https://splunk.elfu.org/)
 
 
 #### Solution
@@ -2566,15 +2569,15 @@ Minty Candycane
 
 
 Challenge-url:  
-https://key.elfu.org?challenge=bitting-cutter
+[https://key.elfu.org?challenge=bitting-cutter](https://key.elfu.org?challenge=bitting-cutter)
 
 
 Direct key generation:  
-https://key.elfu.org/backend/keys/SC4_preview/004000.png
+[https://key.elfu.org/backend/keys/SC4_preview/004000.png](https://key.elfu.org/backend/keys/SC4_preview/004000.png)
 
 
 Submit key to lock:  
-https://thisisit.elfu.org/lock.php
+[https://thisisit.elfu.org/lock.php](https://thisisit.elfu.org/lock.php)
 
 
 Location:  
@@ -2674,16 +2677,16 @@ Alabaster Snowball
 
 
 API download:  
-https://downloads.elfu.org/capteha_api.py
+[https://downloads.elfu.org/capteha_api.py](https://downloads.elfu.org/capteha_api.py)
 
 
 Images download:  
-https://downloads.elfu.org/capteha_images.tar.gz
+[https://downloads.elfu.org/capteha_images.tar.gz](https://downloads.elfu.org/capteha_images.tar.gz)
 
 
 Relevant talk and demo:  
-- https://www.youtube.com/watch?v=jmVPLwjm_zs
-- https://github.com/chrisjd20/img_rec_tf_ml_demo
+- [https://www.youtube.com/watch?v=jmVPLwjm_zs](https://www.youtube.com/watch?v=jmVPLwjm_zs)
+- [https://github.com/chrisjd20/img_rec_tf_ml_demo](https://github.com/chrisjd20/img_rec_tf_ml_demo)
 
 
 Location:  
@@ -2880,7 +2883,7 @@ Krampus
 
 
 Portal url:  
-https://studentportal.elfu.org/
+[https://studentportal.elfu.org/](https://studentportal.elfu.org/)
 
 
 #### Solution
@@ -3053,12 +3056,12 @@ Table: krampus
 ```
 
 Nice, we have the links to the images. We can now see all of them at
-- https://studentportal.elfu.org/krampus/0f5f510e.png
-- https://studentportal.elfu.org/krampus/1cc7e121.png
-- https://studentportal.elfu.org/krampus/439f15e6.png
-- https://studentportal.elfu.org/krampus/667d6896.png
-- https://studentportal.elfu.org/krampus/adb798ca.png
-- https://studentportal.elfu.org/krampus/ba417715.png
+- [https://studentportal.elfu.org/krampus/0f5f510e.png](https://studentportal.elfu.org/krampus/0f5f510e.png)
+- [https://studentportal.elfu.org/krampus/1cc7e121.png](https://studentportal.elfu.org/krampus/1cc7e121.png)
+- [https://studentportal.elfu.org/krampus/439f15e6.png](https://studentportal.elfu.org/krampus/439f15e6.png)
+- [https://studentportal.elfu.org/krampus/667d6896.png](https://studentportal.elfu.org/krampus/667d6896.png)
+- [https://studentportal.elfu.org/krampus/adb798ca.png](https://studentportal.elfu.org/krampus/adb798ca.png)
+- [https://studentportal.elfu.org/krampus/ba417715.png](https://studentportal.elfu.org/krampus/ba417715.png)
 
 ![Scrap of Paper](images/scrap_of_paper_1.png)
 ![Scrap of Paper](images/scrap_of_paper_2.png)
@@ -3137,15 +3140,15 @@ Holly Evergreen
 
 
 Elfscrow Crypto:  
-https://downloads.elfu.org/elfscrow.exe
+[https://downloads.elfu.org/elfscrow.exe](https://downloads.elfu.org/elfscrow.exe)
 
 
 Symbols:  
-https://downloads.elfu.org/elfscrow.pdb
+[https://downloads.elfu.org/elfscrow.pdb](https://downloads.elfu.org/elfscrow.pdb)
 
 
 Encrypted Document:  
-https://downloads.elfu.org/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf.enc
+[https://downloads.elfu.org/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf.enc](https://downloads.elfu.org/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf.enc)
 
 
 #### Solution
@@ -3445,7 +3448,7 @@ We search for 'crate' and find some elements.
 ```
 
 Here we also find the crate link:  
-http://sleighworkshopdoor.elfu.org
+[http://sleighworkshopdoor.elfu.org](http://sleighworkshopdoor.elfu.org)
 
 
 
@@ -3648,11 +3651,11 @@ Wunorse Openslae
 
 
 Sleigh Route Finder API:  
-https://srf.elfu.org/
+[https://srf.elfu.org/](https://srf.elfu.org/)
 
 
 Zeek logs:  
-https://downloads.elfu.org/http.log.gz
+[https://downloads.elfu.org/http.log.gz](https://downloads.elfu.org/http.log.gz)
 
 
 Location:  
@@ -3696,7 +3699,7 @@ We see here the file `README.md`. This caught our eye, because one of the previo
 So we definitely want to check this out!
 We browse to
 ```
-https://srf.elfu.org/README.md
+[https://srf.elfu.org/README.md](https://srf.elfu.org/README.md)
 ```
 and find the credentials we were looking for:
 
