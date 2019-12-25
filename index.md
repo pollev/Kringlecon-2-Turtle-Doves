@@ -2702,7 +2702,7 @@ All we need to do is train the model and connect it to the api script.
 
 
 Upon completing the challenge, you receive a personalized email with the objective code.
-That is all.
+We submit that code to complete the objective.
 
 We start by:
 - Cloning the git repo
