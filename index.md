@@ -3434,6 +3434,7 @@ Kent Tinseltooth
 There is no crate to be found in the room however, until we have a look at the source code.
 We search for 'crate' and find some elements.
 
+```
 <a href="http://sleighworkshopdoor.elfu.org">
     <div class="crate">
         <div class="side"></div>
@@ -3441,8 +3442,9 @@ We search for 'crate' and find some elements.
         <div class="top"></div>
     </div>
 </a>
+```
 
-We find an interesting link:  
+Here we also find the crate link:  
 http://sleighworkshopdoor.elfu.org
 
 
