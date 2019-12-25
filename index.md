@@ -2915,8 +2915,9 @@ Burp is now configured properly to update the csrf token on the fly.
 
 We can now try a request to 
 ```
-/application-check.php?elfmail=testelf%40gmail.com'&token=any_value_here (Note the single quote in the email field)
+/application-check.php?elfmail=testelf%40gmail.com'&token=any_value_here
 ```
+Note the single quote in the email field.
 Because we proxy our request through burp, burp will automatically execute our macro and fetch the CSRF token for us.
 
 
@@ -3194,7 +3195,7 @@ File successfully encrypted!
     ++=====================++
 ```
 
-We see that we send the key `2d98906f2cda51da` to the endpoint elfscrow.elfu.org/api/store.
+We see that we send the key `2d98906f2cda51da` to the endpoint `elfscrow.elfu.org/api/store`.
 The server responds to this by sending back the identifier `f42b5971-c51e-45a9-a3ac-7c532cf1e722`
 
 Resending the same key to the endpoint three times results in three different ids:
@@ -3693,15 +3694,15 @@ polle@polle-pc: $ cat http.log | jq '.[] | select (.status_code == 200) | .uri' 
 "/vendor/jquery/jquery.min.js"
 ```
 
-We see here the file `README.md`. This caught our eye, because one of the previous challenges had us decrypt a [redacted document](relevant_files/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf). This document had a comment inside it:
+We see here the file `README.md`. This caught our eye, because one of the previous challenges had us decrypt a [special document](relevant_files/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf). This document had a comment inside it:
 > The default login credentials should be changed on startup and can be found in the readme in
 > The ElfU Research Labs git repository.
 
 So we definitely want to check this out!
 We browse to
-```
+
 [https://srf.elfu.org/README.md](https://srf.elfu.org/README.md)
-```
+
 and find the credentials we were looking for:
 
 ![SRF Credentials](images/srf_creds.png)
