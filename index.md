@@ -3942,6 +3942,14 @@ Reading it does not bode well for the 2020 holiday season...
 
 ![Bell Tower Letter](images/bell_tower_letter.png)
 
+I hope you enjoyed reading my writeup. A massive thanks to the SANS team for creating such amazing challenges every year.
+It has truly been a blast! See you all next year!
+
+> Merry Christmas and a Happy new year
+> - Polle
+
 -----------------------------
 ## Bonus
-todo
+
+I might add some bonus content here later. Things like bruteforcing the keypad and the bitting machine.
+For now I will enjoy the holiday season myself!
