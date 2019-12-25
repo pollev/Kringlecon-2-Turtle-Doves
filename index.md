@@ -3784,6 +3784,7 @@ Filtering ip block 1 / 1
 ```
 
 We now have a file containing all the user agents used by malicious actors. We can see if other requests used the same user agents.
+
 However first we need to prepare our data a little bit. We need to double escape all of the backslashes in the file:
 ```
 polle@polle-pc: $ sed -i 's#\\#\\\\#g' malicious_agents.log
