@@ -2694,10 +2694,11 @@ Steam Tunnels
 
 
 #### Solution
-The solution is pretty much provided for us.
-We have the api script to submit the correct responses.
-We have the github script to train our machine learning model
-We then just need to train the model and connect it to the api script.
+The solution is pretty much provided for us:
+- We have the api script to submit the correct responses.
+- We have the github script to train our machine learning model.
+
+All we need to do is train the model and connect it to the api script.
 
 
 Upon completing the challenge, you receive a personalized email with the objective code.
