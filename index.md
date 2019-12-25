@@ -3938,7 +3938,7 @@ Credits:
 ![Bell Tower Credits](images/bell_tower_credits.png)
 
 One last thing we notice however, is that we can expect more naughty interference next year. We spot a letter in the corner of the bell tower.
-Reading it does not bode well for the holiday season next year...
+Reading it does not bode well for the 2020 holiday season...
 
 ![Bell Tower Letter](images/bell_tower_letter.png)
 
