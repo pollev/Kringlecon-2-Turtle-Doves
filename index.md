@@ -3290,7 +3290,7 @@ int super_secure_random(void)
 ```
 
 We can see here that the seed is indeed just the current timestamp.
-This seed is then used in the random number generator. If we know the exact timestamp of the encryption we could generate the key that was used to encrypt.
+This seed is used in the random number generator. If we know the exact timestamp of encryption we can generate the key that was used.
 We look further and find that the encryption is done using `DES CBC`.
 
 That is all the info we need to complete this challenge.
@@ -3303,7 +3303,7 @@ We then need to iterate over a two hour period:
 
 We try to decrypt with each key. If an error occurs during the decryption we do nothing.
 If the decryption completes without error, we need to check if the decrypted file is real or just garbage data.
-To do this, we only consider a file valid if it contains the string '%PDF-'.
+To do this, we only consider a file valid if it contains the string 'PDF'.
 Alternatively, we could have searched for some other magic bytes used in pdf files and tried to match on those.
 
 
@@ -3396,7 +3396,6 @@ One of them is the decrypted file however. You can read it [here](relevant_files
 
 The middle line on the cover page is our code word
 
-```
 #### Code
 The code word: `Machine Learning Sleigh Route Finder`
 
@@ -3404,15 +3403,221 @@ The code word: `Machine Learning Sleigh Route Finder`
 ### Open the Sleigh Shop Door
 #### Context
 Objective
->
+> Visit Shinny Upatree in the Student Union and help solve their problem. What is written on the paper you retrieve for Shinny?
+> For hints on achieving this objective, please visit the Student Union and talk with Kent Tinseltooth.
+
+Hint:
+Shinny Upatree
+> _Psst - hey!_
+> I'm Shinny Upatree, and **I** know what's going on!
+> Yeah, that's right - guarding the sleigh shop has made me privvy to some _serious_, high-level intel.
+> In fact, I know WHO is causing all the trouble.
+> Cindy? Oh no no, not _that_ who.  And stop guessing - you'll never figure it out.
+> The only way you _could_ would be if you could break into [my crate](https://crate.elfu.org), here.
+> You see, I've written the villain's name down on a piece of paper and hidden it away securely!
+
+Alternatively, after completing the `Smart Braces` challenge, we could have found the door like this.  
+Hint:
+Kent Tinseltooth
+> Oh thank you!  It's so nice to be back in my own head again.  Er, alone.
+> By the way, have you tried to get into the crate in the Student Union?  It has an interesting set of locks.
+> There are funny rhymes, references to perspective, and odd mentions of eggs!
+> And if you think the stuff in your browser looks strange, you should see the page source...
+> Special tools?  No, I don't think you'll need any extra tooling for those locks.
+> BUT - I'm pretty sure you'll need to use Chrome's developer tools for that one.
+> Or sorry, you're a Firefox fan?
+> Yeah, Safari's fine too - I just have an ineffible hunger for a physical Esc key.
+> Edge?  That's cool.  Hm?  No no, I was thinking of an unrelated thing.
+> Curl fan?  Right on!  Just remember: the Windows one doesn't like double quotes.
+> _Old school, huh?  Oh sure - I've got what you need right here..._
+
+There is no crate to be found in the room however, until we have a look at the source code.
+We search for 'crate' and find some elements.
+
+<a href="http://sleighworkshopdoor.elfu.org">
+    <div class="crate">
+        <div class="side"></div>
+        <div class="front"></div>
+        <div class="top"></div>
+    </div>
+</a>
+
+We find an interesting link:  
+http://sleighworkshopdoor.elfu.org
+
+
 
 #### Solution
+This page contains several locks that we need to find the unlock codes for.
+
+##### Challenge 1
+Objective:
+> You don't need a clever riddle to open the console and scroll a little.
+
+Hints:
+- Google: "[your browser name] developer tools console"
+- The code is 8 char alphanumeric
+
+Solution:  
+Just open the developer console and scroll up in it a little.
+
+![Doorcode Console Scroll](images/doorcode_console_scroll.png)
+
+##### Challenge 2
+Objective:
+>Some codes are hard to spy, perhaps they'll show up on pulp with dye?
+
+Hints:
+- Most paper is made out of pulp.
+- How can you view this page on paper?
+- Emulate `print` media, print this page, or view a print preview.
+
+Solution:  
+Print preview the page, the code will be printed in big letters next to the lock.
+
+![Doorcode Print](images/doorcode_print.png)
+
+##### Challenge 3
+Objective:
+> This code is still unknown; it was fetched but never shown.
+
+Hints:
+- Google: "[your browser name] view network"
+- Examine the network requests.
+
+Solution:  
+Have a look at the firefox network tab to see that the code was fetched in the form of an image file.
+
+![Doorcode Network](images/doorcode_network.png)
+
+##### Challenge 4
+Objective:
+> Where might we keep the things we forage? Yes, of course: Local barrels!
+
+Hints:
+- Google: "[your browser name] view local storage"
+
+Solution:  
+Have a look at the storage tab in the developer console. Check out 'Local Storage' for the code.
+
+![Doorcode Storage](images/doorcode_storage.png)
+
+##### Challenge 5
+Objective:
+> Did you notice the code in the title? It may very well prove vital.
+
+Hints:
+- There are several ways to see the full page title:
+    - Hovering over this browser tab with your mouse
+    - Finding and opening the `<title>` element in the DOM tree
+    - Typing `document.title` into the console
+
+Solution:  
+Just look at the title of the page or type `document.title` in the console.
+
+![Doorcode Title](images/doorcode_title.png)
+
+##### Challenge 6
+Objective:
+> In order for this hologram to be effective, it may be necessary to increase your perspective.
+
+Hints:
+- `perspective` is a css property.
+- Find the element with this css property and increase the current value.
+
+Solution:  
+Right click on the hologram, inspect element. Look at the css window and increase the value of 'perspective' to a very high number.
+
+![Doorcode Perspective](images/doorcode_perspective.png)
+
+##### Challenge 7
+Objective:
+> The font you're seeing is pretty slick, but this lock's code was my first pick.
+
+Hints:
+- In the `font-family` css property, you can list multiple fonts, and the first available font on the system will be used.
+
+Solution:  
+Right click on the text, inspect element, notice the font-family css property.
+
+![Doorcode Font](images/doorcode_font.png)
+
+##### Challenge 8
+Objective:
+> In the event that the .eggs go bad, you must figure out who will be sad.
+
+Hints:
+- Google: "[your browser name] view event handlers"
+
+Solution:  
+Right click on 'eggs', inspect element, notice the event handler and examine it.
+We see that the js code will set window['VERONICA'] to 'sad'
+
+The correct answer is `VERONICA`
+
+![Doorcode Eggs](images/doorcode_eggs.png)
+
+
+##### Challenge 9
+Objective:
+> This next code will be unredacted, but only when all the chakras are :active.
+
+Hints:
+- `:active` is a css pseudo class that is applied on elements in an active state.
+- Google: "[your browser name] force psudo classes"
+
+Solution:  
+We can find all the elements with .chakra class. We can then force the pseudo class for these to active one by one in firefox.
+Together they form the key.
+
+![Doorcode Active](images/doorcode_active.png)
+
+##### Challenge 10
+Objective:
+>Oh, no! This lock's out of commission! Pop off the cover and locate what's missing.
+
+
+Hints:
+- Use the DOM tree viewer to examine this lock. you can search for items in the DOM using this view.
+- You can click and drag elements to reposition them in the DOM tree.
+- If an action doesn't produce the desired effect, check the console for error output.
+- Be sure to examine that printed circuit board.
+
+Solution:  
+Inspect the element of the last lock. Find the div named 'cover' and move it up the dom.
+We can just examine the right side of the circuit board to find the key for this lock.
+
+![Doorcode Cover](images/doorcode_cover.png)
+
+We write the code down and place the cover back where we took it from. We can now enter the code and press unlock.
+
+However, when we press unlock, nothing happens.
+We see an error in the console now.
+
+
+![Doorcode Macaroni](images/doorcode_macaroni.png)
+
+```
+Error: "Missing macaroni!"
+    317784542493 https://sleighworkshopdoor.elfu.org/client.js/e1435a61-aa73-4433-b18d-cb8a5ccf20ea:1
+```
+
+We just search the html for 'macaroni', find the div, and drag it into the lock div.
+We then repeat these steps for the other elements that are missing. We need:
+- Macaroni
+- Gnome
+- Swab
+
+![Doorcode Final](images/doorcode_final.png)
+
+Once that is done. We can submit the code.
+
+Now that all locks are unlocked, we can see who is the evil villain trying to ruin the holiday season!
+
+![Doorcode Complete](images/doorcode_complete.png)
 
 #### Code
-
-
-
-
+The code for this challenge is `The Tooth Fairy`
 
 
 -----------------------------
