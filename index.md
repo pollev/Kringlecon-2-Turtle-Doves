@@ -2858,6 +2858,7 @@ Krampus
 > And, as long as you're traveling around, be sure to solve any other challenges you happen across.
 
 
+Hint:
 Pepper Minstix
 > That's it - hooray!
 > Have you had any luck retrieving scraps of paper from the Elf U server?
@@ -3107,14 +3108,294 @@ We obtain the code for this challenge: `Super Sled-o-matic`
 ### Recover Cleartext Document
 #### Context
 Objective
->
+> The Elfscrow Crypto tool is a vital asset used at Elf University for encrypting SUPER SECRET documents.
+> We can't send you the source, but we do have debug symbols that you can use.
+> Recover the plaintext content for this encrypted document. We know that it was encrypted on December 6, 2019, between 7pm and 9pm UTC.
+> What is the middle line on the cover page? (Hint: it's five words)
+> For hints on achieving this objective, please visit the NetWars room and talk with Holly Evergreen.
+
+
+Hint:
+Krampus
+> Wow!  We’ve uncovered quite a nasty plot to destroy the holiday season.
+> We’ve gotta stop whomever is behind it!
+> I managed to find this protected document on one of the compromised machines in our environment.
+> I think our attacker was in the process of exfiltrating it.
+> I’m convinced that it is somehow associated with the plan to destroy the holidays.  Can you decrypt it?
+> There are some smart people in the NetWars challenge room who may be able to help us.
+
+
+Hint:
+Holly Evergreen
+> Woohoo! Fantabulous! I'll be the coolest elf in class.
+> On a completely unrelated note, digital rights management can bring a hacking elf down.
+> That ElfScrow one can really be a hassle.
+> It's a good thing Ron Bowes is giving a talk on reverse engineering!
+> _That_ guy knows how to rip a thing apart.  It's like he *breathes* opcodes!
+
+
+Elfscrow Crypto:
+https://downloads.elfu.org/elfscrow.exe
+
+
+Symbols:
+https://downloads.elfu.org/elfscrow.pdb
+
+
+Encrypted Document:
+https://downloads.elfu.org/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf.enc
+
 
 #### Solution
+The executable is a windows file. So we will play with it on a commando vm.
+We will capture the network traffic while encrypting the file.
 
+```
+λ  .\elfscrow.exe --insecure --encrypt test.txt test.txt.enc
+Welcome to ElfScrow V1.01, the only encryption trusted by Santa!
+
+*** WARNING: This traffic is using insecure HTTP and can be logged with tools such as Wireshark
+
+Our miniature elves are putting together random bits for your secret key!
+
+Seed = 1576855032
+
+Generated an encryption key: 2d98906f2cda51da (length: 8)
+
+Elfscrowing your key...
+
+Elfscrowing the key to: elfscrow.elfu.org/api/store
+
+Your secret id is f42b5971-c51e-45a9-a3ac-7c532cf1e722 - Santa Says, don't share that key with anybody!
+File successfully encrypted!
+
+    ++=====================++
+    ||                     ||
+    ||      ELF-SCROW      ||
+    ||                     ||
+    ||                     ||
+    ||                     ||
+    ||     O               ||
+    ||     |               ||
+    ||     |   (O)-        ||
+    ||     |               ||
+    ||     |               ||
+    ||                     ||
+    ||                     ||
+    ||                     ||
+    ||                     ||
+    ||                     ||
+    ++=====================++
+```
+
+We see that we send the key `2d98906f2cda51da` to the endpoint elfscrow.elfu.org/api/store.
+The server responds to this by sending back the identifier `f42b5971-c51e-45a9-a3ac-7c532cf1e722`
+
+Resending the same key to the endpoint three times results in different three different ids:
+```
+e40f6b67-273b-4cd6-afa6-8594cdc58b63
+a5bae332-43d9-42fa-91ac-0ff6700ee6d7
+7ddb7a7c-7853-4c2b-a589-73912f4d365c
+```
+So the id is clearly not generated purely from the key itself.
+We can also retrieve our key by posting the ID back to the endpoint elfscrow.elfu.org/api/retrieve.
+The server responds with the key we sent it in the first place.
+
+So, when we encrypt a file, the following happens:
+- A key is generated based on a random seed
+- The key is used to encrypt our file
+- The key is stored on the elfu server
+- The server delivers us an identifier
+
+If we decrypt a file, the following happens:
+- We submit our encrypted file and identifier to the application
+- The identifier is used to retrieve our key from the server
+- Our retrieved key is used to decrypt our file
+
+As a result, there are two possible ways to attack this encryption:
+- Obtain the identifier corresponding to the key used to encrypt the file
+- Obtain the key used to encrypt the file
+
+We need to retrieve one of those two things for the encrypted pdf document.
+Guessing the identifier will be hard, as it appears random at first glance.
+We also know very little about the key store server and how it generates the identifiers.
+
+Because of this, we decided to attack the key itself. We can see the random seed used generate the key when we run the binary, and it seems to not change all that much.
+After playing around with it for a little while, it becomes clear that the random seed is just the current timestamp.
+
+Lets open the application in Ghidra and figure out how our keys are being generated.
+We look through the code a bit and find at some point the function that generates the key:
+
+![Ghidra Generate Key](images/ghidra_genkey.png)
+
+```
+void __thiscall ?generate_key@@YAXQAE@Z(void *this,uchar *buffer)
+
+{
+  FILE *pFVar1;
+  int iVar2;
+  time_t tVar3;
+  char *_Format;
+  uint i;
+
+  _Format = "Our miniature elves are putting together random bits for your secret key!\n\n";
+  pFVar1 = __iob_func();
+  fprintf(pFVar1 + 2,_Format,this);
+  tVar3 = time((time_t *)0x0);
+  ?super_secure_srand@@YAXH@Z((int)tVar3);
+  i = 0;
+  while (i < 8) {
+    iVar2 = super_secure_random();
+    buffer[i] = (uchar)iVar2;
+    i = i + 1;
+  }
+  return;
+}
+```
+
+We also find the functions for encryption, decryption, and the random number generation.
+We analyse these functions and write our own pseudo code for the ones we want to have a closer look at.
+
+```
+generate(*buffer)
+{
+  int next_byte;
+  time_t time;
+  uint i;
+
+  time = time((time_t *)0x0);
+  super_secure_srand(time);
+  i = 0;
+  while (i < 8) {
+    next_byte = super_secure_random();
+    buffer[i] = (uchar)next_byte;
+    i = i + 1;
+  }
+  return;
+}
+
+super_secure_srand(int seed)
+{
+  global_value = seed;
+  return;
+}
+
+int super_secure_random(void)
+{
+  global_value = global_value * 0x343fd + 0x269ec3;
+  return global_value >> 0x10 & 0x7fff;
+}
+
+We can see here that the seed is indeed just the current timestamp.
+This seed is then used in the random number generator. If we know the exact timestamp of the encryption we could generate the key that was used to encrypt.
+We look further and find that the encryption is done using `DES CBC`.
+
+That is all the info we need to complete this challenge.
+
+All we do now is create a python script that takes a timestamp and creates a key from that timestamp.
+It should then use that key in DES CBC mode to decrypt the file.
+
+We then need to iterate over a two hour period:
+> December 6, 2019, between 7pm and 9pm UTC. -> from `1575658800` to `1575666000`
+
+We try to decrypt with each key. If an error occurs during the decryption we do nothing.
+If the decryption completes without error, we need to check if the decrypted file is real or just garbage data.
+To do this, we only consider a file valid if it contains the string '%PDF-'.
+Alternatively, we could have searched for some other magic bytes used in pdf files and tried to match on those.
+
+
+Putting all this together, we end up with the following fairly simple python script:
+```python
+#!/usr/bin/env python3
+from hashlib import md5
+
+from Crypto.Cipher import DES
+from Crypto.Random import get_random_bytes
+from Crypto.Util.Padding import pad, unpad
+from datetime import datetime
+
+enc_file = "ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf.enc"
+out_file = "ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2"
+
+class DESCipher:
+    def __init__(self, key):
+        self.key = key
+
+    def decrypt(self, data):
+        self.cipher = DES.new(self.key, DES.MODE_CBC, data[:DES.block_size])
+        return unpad(self.cipher.decrypt(data[DES.block_size:]), DES.block_size)
+        # In case you get padding errors, you can try to just not unpad
+        #return self.cipher.decrypt(raw[AES.block_size:])
+
+def gen_key(seed):
+    key_b = seed
+    key = bytearray()
+    for i in range(8):
+        key_b = key_b * 0x343fd + 0x269ec3
+        val = hex(key_b >> 0x10 & 0x7fff)[-2:]
+        if 'x' in val:
+            val = val.replace('x', '0')
+        val = bytes.fromhex(val)
+        key.append(val[0])
+    return key
+
+def test_decrypt(key):
+    print('TESTING DECRYPTION')
+    with open(enc_file, "rb") as data:
+        data = data.read()
+        print('Message...:', DESCipher(key).decrypt(data).decode())
+
+def bruteforce_decrypt():
+    print('BRUTEFORCING DECRYPTION')
+    with open(enc_file, "rb") as data:
+        data = data.read()
+        start = 1575658800
+        stop = 1575666000
+        for i in range(start, stop):
+            perc = round(((i - start) / (stop - start)) * 100, 2)
+            print(f"Progress: {perc}% done                 \r", end = '')
+            key = gen_key(i)
+            try:
+                decrypted = DESCipher(key).decrypt(data)
+                write_out(key, decrypted)
+            except KeyboardInterrupt:
+                raise
+            except:
+                pass
+
+out_file_nr = 1
+def write_out(key, data):
+    global out_file_nr
+    if b'PDF' in data:
+        with open(f"{out_file}_{out_file_nr}.pdf", 'wb') as out:
+            print(f"Found possible match using key '{key.hex()}'! Writing to {out_file}_{out_file_nr}.pdf")
+            out.write(data)
+            out_file_nr = out_file_nr + 1
+
+if __name__ == '__main__':
+    bruteforce_decrypt()
+```
+
+Running this file properly decrypts the PDF:
+```
+polle@polle-pc $ ./des_cbc.py
+BRUTEFORCING DECRYPTION
+Found possible match using key '281c677ff935b40b'! Writing to ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2_1.pdf
+Found possible match using key '9b1b55262118f0e2'! Writing to ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2_2.pdf
+Found possible match using key 'aa6dccac453dc2db'! Writing to ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2_3.pdf
+Found possible match using key 'b5ad6a321240fbec'! Writing to ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2_4.pdf
+```
+
+
+We end up with multiple potential files, (sometimes garbage data happens to form the word 'PDF').
+One of them is the decrypted file however. You can read it [here](relevant_files/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf)
+
+
+The middle line on the cover page is our code word
+
+```
 #### Code
-
-
-
+The code word: `Machine Learning Sleigh Route Finder`
 
 -----------------------------
 ### Open the Sleigh Shop Door
@@ -3129,11 +3410,13 @@ Objective
 
 
 
+
+
 -----------------------------
 ### Filter Out Poisoned Sources of Weather Data
 #### Context
 Objective
->
+> 
 
 #### Solution
 
